@@ -1,0 +1,54 @@
+{
+  "env": {
+    "timestamp": "2026-09-27 23:46:45",
+    "machine": "ARM64",
+    "python": "3.12.10",
+    "onnxruntime": "1.30.0",
+    "providers_available": [
+      "AzureExecutionProvider",
+      "CPUExecutionProvider",
+      "QNNExecutionProvider"
+    ],
+    "qnn_plugin": {
+      "library": "C:\\Users\\rrsri\\AppData\\Local\\Programs\\Python\\Python312-arm64\\Lib\\site-packages\\onnxruntime_qnn\\onnxruntime_providers_qnn.dll",
+      "ep": "QNNExecutionProvider"
+    },
+    "ep_devices": [
+      {
+        "ep": "CPUExecutionProvider",
+        "vendor": "Microsoft",
+        "device_type": "CPU"
+      },
+      {
+        "ep": "QNNExecutionProvider",
+        "vendor": "Qualcomm",
+        "device_type": "NPU"
+      },
+      {
+        "ep": "QNNExecutionProvider",
+        "vendor": "Qualcomm",
+        "device_type": "GPU"
+      }
+    ],
+    "npu_devices_found": 1
+  },
+  "models": [
+    {
+      "model": "_tiny_conv.onnx",
+      "path": "C:\\Users\\rrsri\\Desktop\\PeakAlways\\Snapdragon\\sahaay\\tools\\_tiny_conv.onnx",
+      "cpu_ms": 1.32,
+      "cpu_providers": [
+        "CPUExecutionProvider"
+      ],
+      "npu_ms": 0.151,
+      "npu_providers": [
+        "QNNExecutionProvider",
+        "CPUExecutionProvider"
+      ],
+      "npu_active": true,
+      "npu_load_ms": 1676.9,
+      "max_abs_diff": 0.00011798739433288574,
+      "speedup": 8.74
+    }
+  ]
+}

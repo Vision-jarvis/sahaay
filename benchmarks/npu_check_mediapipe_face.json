@@ -1,0 +1,71 @@
+{
+  "env": {
+    "timestamp": "2026-09-27 23:47:05",
+    "machine": "ARM64",
+    "python": "3.12.10",
+    "onnxruntime": "1.30.0",
+    "providers_available": [
+      "AzureExecutionProvider",
+      "CPUExecutionProvider",
+      "QNNExecutionProvider"
+    ],
+    "qnn_plugin": {
+      "library": "C:\\Users\\rrsri\\AppData\\Local\\Programs\\Python\\Python312-arm64\\Lib\\site-packages\\onnxruntime_qnn\\onnxruntime_providers_qnn.dll",
+      "ep": "QNNExecutionProvider"
+    },
+    "ep_devices": [
+      {
+        "ep": "CPUExecutionProvider",
+        "vendor": "Microsoft",
+        "device_type": "CPU"
+      },
+      {
+        "ep": "QNNExecutionProvider",
+        "vendor": "Qualcomm",
+        "device_type": "NPU"
+      },
+      {
+        "ep": "QNNExecutionProvider",
+        "vendor": "Qualcomm",
+        "device_type": "GPU"
+      }
+    ],
+    "npu_devices_found": 1
+  },
+  "models": [
+    {
+      "model": "face_detector.onnx",
+      "path": "C:\\Users\\rrsri\\Desktop\\PeakAlways\\Snapdragon\\models\\aihub\\mediapipe_face_x2\\mediapipe_face-onnx-float\\face_detector.onnx",
+      "cpu_ms": 2.974,
+      "cpu_providers": [
+        "CPUExecutionProvider"
+      ],
+      "npu_ms": 0.418,
+      "npu_providers": [
+        "QNNExecutionProvider",
+        "CPUExecutionProvider"
+      ],
+      "npu_active": true,
+      "npu_load_ms": 1785.4,
+      "max_abs_diff": 0.07534027099609375,
+      "speedup": 7.11
+    },
+    {
+      "model": "face_landmark_detector.onnx",
+      "path": "C:\\Users\\rrsri\\Desktop\\PeakAlways\\Snapdragon\\models\\aihub\\mediapipe_face_x2\\mediapipe_face-onnx-float\\face_landmark_detector.onnx",
+      "cpu_ms": 1.005,
+      "cpu_providers": [
+        "CPUExecutionProvider"
+      ],
+      "npu_ms": 0.163,
+      "npu_providers": [
+        "QNNExecutionProvider",
+        "CPUExecutionProvider"
+      ],
+      "npu_active": true,
+      "npu_load_ms": 1718.0,
+      "max_abs_diff": 0.0008823871612548828,
+      "speedup": 6.17
+    }
+  ]
+}

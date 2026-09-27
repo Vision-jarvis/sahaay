@@ -1,0 +1,29 @@
+# python
+__pycache__/
+*.pyc
+.venv/
+build/
+dist/
+*.egg-info/
+*.spec
+
+# models and caches (distributed via GitHub Release / first-run download)
+models/
+*.onnx
+*.onnx_ctx.onnx
+*.bin
+*.gguf
+*.genie.zip
+tools/_tiny_conv.onnx
+.cache/
+
+# runtime
+logs/
+*.log
+settings.local.json
+
+# os / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

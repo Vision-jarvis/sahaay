@@ -1,0 +1,17 @@
+# Runtime: Python 3.12 ARM64 on Windows on Snapdragon (py -3.12)
+onnxruntime>=1.30
+onnxruntime-qnn>=2.6
+numpy>=2.0
+pillow>=10
+pygrabber>=0.2        # DirectShow webcam capture (OpenCV has no ARM64 wheel)
+sounddevice>=0.5
+uiautomation>=2.0     # Windows UI Automation tree
+pyautogui>=0.9
+pynput>=1.8
+pystray>=0.19
+psutil>=5.9
+piper-tts>=1.2
+customtkinter>=5.2
+mss>=9
+requests>=2.32
+geniex>=0.7           # Qualcomm GenieX runtime (QAIRT NPU) for LLM/VLM
