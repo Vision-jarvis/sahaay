@@ -85,11 +85,24 @@ def create_session(
         so.add_provider_for_devices(devs, opts)
         if context_cache and not model_path.endswith(".onnx_ctx.onnx"):
             ctx = Path(model_path).with_suffix(".onnx_ctx.onnx")
-            so.add_session_config_entry("ep.context_enable", "1")
-            so.add_session_config_entry("ep.context_file_path", str(ctx))
-            so.add_session_config_entry("ep.context_embed_mode", "0")
+            if ctx.exists():
+                # Reuse the compiled QNN graph from a previous launch (skips on-device compile).
+                model_path = str(ctx)
+            else:
+                so.add_session_config_entry("ep.context_enable", "1")
+                so.add_session_config_entry("ep.context_file_path", str(ctx))
+                so.add_session_config_entry("ep.context_embed_mode", "0")
     t0 = time.perf_counter()
-    sess = ort.InferenceSession(model_path, so)
+    try:
+        sess = ort.InferenceSession(model_path, so)
+    except Exception:
+        # A stale or foreign-chipset context binary: drop it and compile fresh.
+        if model_path.endswith(".onnx_ctx.onnx"):
+            Path(model_path).unlink(missing_ok=True)
+            return create_session(model_path[: -len(".onnx_ctx.onnx")] + ".onnx", prefer_npu=prefer_npu,
+                                  performance_mode=performance_mode, fp16=fp16, context_cache=False,
+                                  log_severity=log_severity)
+        raise
     load_ms = (time.perf_counter() - t0) * 1000
     provs = sess.get_providers()
     info = SessionInfo(model_path, provs, provs[0] == "QNNExecutionProvider", load_ms, opts)
