@@ -97,7 +97,7 @@ def main() -> None:
         f"Face detector 0.42 ms and face mesh 0.16 ms on the NPU (2.97 ms and 1.01 ms on CPU); full live pipeline {face.get('ms_per_frame', 2.7)} ms per frame at {face.get('fps', 28)} fps.",
         f"Whisper base: encoder {wh.get('encoder_ms', 25):.0f} ms, decoder {wh.get('decoder_ms_per_token', 3):.1f} ms per token; a six-second command transcribes in about 100 ms.",
         f"Qwen3-4B: {llm.get('ttft_ms', 60):.0f} ms to first token, {llm.get('tokens_per_s', 33)} tokens per second; Qwen3-VL-4B: {vlm.get('ttft_ms', 280):.0f} ms to first token, {vlm.get('tokens_per_s', 30)} tokens per second, a screen description in about {vlm.get('total_ms', 2300)/1000:.1f} s.",
-        "Qualcomm AI Hub profiling on the reference devices confirms 100% of ops on the NPU for the face detector (0.4 ms), face mesh (0.2 ms) and Whisper decoder (2.4 ms) on Snapdragon X2 Elite; X Elite numbers are in the repository benchmarks.",
+        "Qualcomm AI Hub profiling on the reference devices confirms 100% of ops on the NPU: on Snapdragon X2 Elite CRD the face detector takes 0.4 ms, the face mesh 0.2 ms, the Whisper encoder 21.5 ms and the decoder 2.4 ms per token; on Snapdragon X Elite CRD (the HP OmniBook chip) 0.7 ms, 0.3 ms, 45.4 ms and 3.7 ms. Job links are in the repository.",
         "Memory: about 5 GB resident with both generative models loaded; fits a 16 GB OmniBook.",
     ])
 

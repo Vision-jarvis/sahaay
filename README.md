@@ -121,15 +121,16 @@ Measured on the development machine with `tools/bench_all.py` (full tables and r
 | Qwen3-VL-4B-Instruct (GenieX), screen description | | 280 ms to first token, 30 tok/s, 2.3 s total | 8 to 10 s to load |
 | Piper TTS, 4 s of speech | 230 ms | | 16x real time |
 
-Qualcomm AI Hub profiling on the reference devices (cloud device farm, not this laptop):
+Qualcomm AI Hub profiling on the reference devices (cloud device farm, every op on the NPU, job links in `benchmarks/aihub_profiles.md`):
 
-| Model | Snapdragon X2 Elite CRD | Snapdragon X Elite CRD (OmniBook) |
-|---|---|---|
-| Face detector | 0.4 ms, 145/145 ops on NPU ([job](https://workbench.aihub.qualcomm.com/jobs/jgly9mxe5/)) | see `benchmarks/aihub_xelite.md` |
-| Face mesh | 0.2 ms, 105/105 ops on NPU ([job](https://workbench.aihub.qualcomm.com/jobs/j568947vg/)) | |
-| Whisper base decoder | 2.4 ms, 975/975 ops on NPU ([job](https://workbench.aihub.qualcomm.com/jobs/jp1nkz1kg/)) | |
+| Model | Snapdragon X2 Elite CRD | Snapdragon X Elite CRD (HP OmniBook X, EliteBook) |
+|---|---:|---:|
+| Face detector | 0.4 ms | 0.7 ms |
+| Face mesh | 0.2 ms | 0.3 ms |
+| Whisper base encoder | 21.5 ms | 45.4 ms |
+| Whisper base decoder, per token | 2.4 ms | 3.7 ms |
 
-Memory: the two GenieX bundles resident together take about 5 GB; the whole app fits comfortably in a 16 GB OmniBook.
+On a judge's OmniBook that is about 1 ms per frame for face tracking and about 120 ms to transcribe a six-second command. Memory: the two GenieX bundles resident together take about 5 GB; the whole app fits comfortably in a 16 GB OmniBook.
 
 ## Deployment
 

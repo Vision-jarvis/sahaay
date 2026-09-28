@@ -44,8 +44,11 @@ class WhisperNPU:
         model_dir = Path(model_dir)
         self.enc, self.enc_info = create_session(model_dir / "encoder.onnx", prefer_npu=prefer_npu, context_cache=False)
         self.dec, self.dec_info = create_session(model_dir / "decoder.onnx", prefer_npu=prefer_npu, context_cache=False)
-        self.fe = WhisperFeatureExtractor.from_pretrained(hf_id)
-        self.tok = WhisperTokenizer.from_pretrained(hf_id)
+        # tokenizer + mel config: local copy (saved by tools/get_models.py) so the app never needs the network
+        local_hf = next((p for p in (model_dir / "hf", model_dir.parent / "hf") if (p / "tokenizer.json").exists()), None)
+        src = str(local_hf) if local_hf else hf_id
+        self.fe = WhisperFeatureExtractor.from_pretrained(src)
+        self.tok = WhisperTokenizer.from_pretrained(src)
         self.special = set(self.tok.all_special_ids)
         self.n_layers = sum(1 for i in self.dec.get_inputs() if i.name.startswith("k_cache_self_"))
         self.enc_out_names = [o.name for o in self.enc.get_outputs()]

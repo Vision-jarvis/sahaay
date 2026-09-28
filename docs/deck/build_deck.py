@@ -300,8 +300,10 @@ def build(out: Path) -> None:
         "GPU:| deliberately nothing; the user's apps keep it.",
         "Concurrent:| the cursor stays at 28 fps and Whisper keeps listening while the LLM plans and the VLM describes, all on one NPU.",
     ], Inches(8.6), Inches(2.1), Inches(4.3), Inches(4), size=12, gap=8)
-    d.text(s, "AI Hub profiling on reference devices: face detector 0.4 ms (145/145 ops on NPU), face mesh 0.2 ms (105/105), Whisper decoder 2.4 ms (975/975) on Snapdragon X2 Elite CRD; X Elite CRD numbers in benchmarks/.",
-           Inches(0.6), Inches(5.6), Inches(7.6), Inches(1.2), size=11, color=DIM)
+    d.text(s, ["Qualcomm AI Hub profiling, every op on the NPU (job links in benchmarks/aihub_profiles.md):",
+               "Snapdragon X2 Elite CRD: face detector 0.4 ms, face mesh 0.2 ms, Whisper encoder 21.5 ms, decoder 2.4 ms/token.",
+               "Snapdragon X Elite CRD (HP OmniBook): face detector 0.7 ms, face mesh 0.3 ms, Whisper encoder 45.4 ms, decoder 3.7 ms/token."],
+           Inches(0.6), Inches(5.55), Inches(7.6), Inches(1.4), size=11, color=DIM)
 
     # 8 Deployment
     s = d.slide("Installs in one command, then never needs the internet again", kicker="DEPLOYMENT & ACCESSIBILITY")
