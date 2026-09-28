@@ -8,8 +8,8 @@ Built by Ruhan Srivastava for the Snapdragon AI Lab Build & Present Challenge 20
 
 > **TLDR**
 > - Head pose from a 468-point face mesh drives the cursor; blinks, dwell and mouth gestures click and drag. Whisper turns speech into dictation and commands. Qwen3-4B turns free speech into Windows actions. Qwen3-VL describes the screen and the webcam. Piper speaks back in English and Hindi.
-> - All of it runs on the NPU at the same time: face tracking in under 1 ms per frame, speech in about 100 ms per sentence, language model at 33 tokens per second, vision-language model at 30 tokens per second, on this machine. Measured, not estimated: see `benchmarks/`.
-> - Fits the 16 GB, 45 TOPS OmniBook a judge owns, and a 60,000 rupee laptop becomes an assistive device that otherwise costs over 1.5 lakh and needs the cloud.
+> - All of it runs on the NPU at the same time: face tracking in 2.7 ms per frame, a spoken command transcribed in under 100 ms, language model at 31 tokens per second, vision-language model at 25 tokens per second, on this machine. Measured, not estimated: see `benchmarks/`.
+> - Runs on the 45 TOPS OmniBook a judge owns (hands-free mode within 16 GB, both generative models on 32 GB), and a 60,000 rupee laptop becomes an assistive device that otherwise costs over 1.5 lakh and needs the cloud.
 
 ## Demo
 
@@ -96,7 +96,7 @@ Two-tier command handling keeps the app feeling instant. Common commands never t
 
 No fine-tuning was needed. The face and Whisper models were exported with `qai-hub-models ... export` for both `Snapdragon X2 Elite CRD` (this laptop, Hexagon v81) and `Snapdragon X Elite CRD` (the OmniBook chip, Hexagon v73); the installer picks the right set. The language models are Qualcomm's own NPU bundles pulled with `geniex-py pull ai-hub-models/...`.
 
-Notes: the Piper VITS graph has dynamic shapes that the QNN compiler rejects, so it runs on the CPU today (230 ms for 4 s of audio, 16x real time); Qualcomm AI Hub lists a `pipertts_en` recipe that is the NPU path for the next version. Whisper mel features and tokenisation are CPU by design.
+Notes: the Piper VITS graph has dynamic shapes that the QNN compiler rejects, so it runs on the CPU today (167 ms for 4 s of audio, 23x real time); Qualcomm AI Hub lists a `pipertts_en` recipe that is the NPU path for the next version. Whisper mel features and tokenisation are CPU by design.
 
 ## Compute cores used
 
@@ -112,14 +112,14 @@ Measured on the development machine with `tools/bench_all.py` (full tables and r
 
 | Stage | CPU | NPU | Note |
 |---|---:|---:|---|
-| Face detector (256x256) | 2.97 ms | 0.42 ms | 7x |
-| Face mesh (192x192) | 1.01 ms | 0.16 ms | 6x |
-| Full face pipeline, live 1280x720 | | 2.7 ms/frame | 28 fps, camera-bound |
-| Whisper base encoder (30 s window) | | 25 ms | |
-| Whisper base decoder | | 3 ms/token | a 6 s command in about 100 ms |
-| Qwen3-4B-Instruct (GenieX) | | 60 ms to first token, 33 tok/s | 8 to 12 s to load |
-| Qwen3-VL-4B-Instruct (GenieX), screen description | | 280 ms to first token, 30 tok/s, 2.3 s total | 8 to 10 s to load |
-| Piper TTS, 4 s of speech | 230 ms | | 16x real time |
+| Face detector (256x256) | 2.75 ms | 0.43 ms | 6.4x |
+| Face mesh (192x192) | 0.87 ms | 0.16 ms | 5.3x |
+| Full face pipeline on a live 1280x720 frame (detect, crop, mesh, pose) | 25.3 ms | 2.7 ms | 364 fps possible, the webcam delivers 28 |
+| Whisper base encoder (30 s window) | n/a, precompiled QNN context | 21.5 ms | |
+| Whisper base decoder | n/a | 2.7 ms/token | a 5.6 s command in 79 ms end to end |
+| Qwen3-4B-Instruct (GenieX), screen context + command | | 243 ms to first token, 30.9 tok/s | 10 s to load |
+| Qwen3-VL-4B-Instruct (GenieX), screen description | | 269 ms to first token, 25.3 tok/s | 10 s to load |
+| Piper TTS, 4 s of speech | 167 ms | | 23x real time |
 
 Qualcomm AI Hub profiling on the reference devices (cloud device farm, every op on the NPU, job links in `benchmarks/aihub_profiles.md`):
 
@@ -130,7 +130,9 @@ Qualcomm AI Hub profiling on the reference devices (cloud device farm, every op 
 | Whisper base encoder | 21.5 ms | 45.4 ms |
 | Whisper base decoder, per token | 2.4 ms | 3.7 ms |
 
-On a judge's OmniBook that is about 1 ms per frame for face tracking and about 120 ms to transcribe a six-second command. Memory: the two GenieX bundles resident together take about 5 GB; the whole app fits comfortably in a 16 GB OmniBook.
+On a judge's OmniBook that is about 1 ms per frame for face tracking and about 120 ms to transcribe a six-second command.
+
+Memory, measured as process RSS growth: the language model adds 5.4 GB and the vision-language model 6.1 GB. On a 32 GB OmniBook X or Ultra both load together. On a 16 GB OmniBook 3 or 5 run with `--no-vlm` (hands-free mode plus UI-Automation narration, about 6 GB total), or swap in the 2B vision model (`qwen3_vl_2b_instruct` on AI Hub) via `settings.json`.
 
 ## Deployment
 
@@ -146,7 +148,7 @@ powershell -ExecutionPolicy Bypass -File install.ps1
 
 **Run:** `run.bat`, or the Start Menu shortcut. Options: `--no-vlm` (skip the vision model on 16 GB machines that need the RAM), `--lang hi`, `--no-head`, `--no-voice`, `--port COM5` for an Arduino switch.
 
-**Requirements:** Windows 11 on Snapdragon (X, X Plus, X Elite, X2). 16 GB RAM recommended. Webcam and microphone. No admin rights, no cloud account.
+**Requirements:** Windows 11 on Snapdragon (X, X Plus, X Elite, X2). 16 GB RAM for hands-free mode, 32 GB to keep both generative models resident (see Performance for the 16 GB options). Webcam and microphone. No admin rights, no cloud account.
 
 **Verify the NPU:** `py -3.12 tools/npu_check.py` prints the execution providers and a CPU versus NPU timing for every ONNX model; `py -3.12 tools/bench_all.py` regenerates `benchmarks/results.md`.
 

@@ -43,22 +43,32 @@ def onnx_rows(paths: list[Path], iters: int) -> list[dict]:
     rows = []
     for p in paths:
         row = {"model": p.name, "dir": p.parent.name}
-        cpu, ci = create_session(p, prefer_npu=False, context_cache=False)
-        feeds = random_feeds(cpu)
-        row["cpu_ms"] = round(bench(cpu, feeds, iters=iters), 3)
-        del cpu
+        feeds = None
+        try:
+            cpu, ci = create_session(p, prefer_npu=False, context_cache=False)
+            feeds = random_feeds(cpu)
+            row["cpu_ms"] = round(bench(cpu, feeds, iters=iters), 3)
+            del cpu
+        except Exception as exc:
+            # Precompiled QNN context graphs (EPContext nodes) only exist for the NPU; that is the point of them.
+            row["cpu_ms"] = None
+            row["cpu_note"] = "precompiled QNN context, NPU-only artifact" if "EPContext" in str(exc) else str(exc)[:120]
         try:
             npu, ni = create_session(p, prefer_npu=True, context_cache=False)
+            if feeds is None:
+                feeds = random_feeds(npu)
             row["npu_ms"] = round(bench(npu, feeds, iters=iters), 3)
             row["npu_active"] = ni.on_npu
             row["providers"] = ni.providers
-            row["speedup"] = round(row["cpu_ms"] / row["npu_ms"], 1)
+            row["speedup"] = round(row["cpu_ms"] / row["npu_ms"], 1) if row.get("cpu_ms") else None
             del npu
         except Exception as exc:
             row["npu_active"] = False
             row["error"] = str(exc)[:200]
         rows.append(row)
-        print(f"  {row['model']:32} cpu {row['cpu_ms']:8.2f} ms   npu {row.get('npu_ms', float('nan')):8.2f} ms   {'NPU' if row.get('npu_active') else 'CPU FALLBACK'}")
+        cpu_s = f"{row['cpu_ms']:8.2f} ms" if row.get("cpu_ms") is not None else "     n/a   "
+        print(f"  {row['model']:32} cpu {cpu_s}   npu {row.get('npu_ms', float('nan')):8.2f} ms   {'NPU' if row.get('npu_active') else 'CPU FALLBACK'}"
+              + (f"   ({row['cpu_note']})" if row.get("cpu_note") else ""))
     return rows
 
 
@@ -102,7 +112,12 @@ def whisper_pipeline() -> dict:
     audio, sr = load_wav(clip)
     out = {}
     for label, prefer in (("npu", True), ("cpu", False)):
-        asr = WhisperNPU(model_dir("whisper"), prefer_npu=prefer)
+        try:
+            asr = WhisperNPU(model_dir("whisper"), prefer_npu=prefer)
+        except Exception as exc:
+            out[label] = {"skipped": "precompiled QNN context is NPU-only" if "EPContext" in str(exc) else str(exc)[:120]}
+            print(f"  whisper {label}: skipped ({out[label]['skipped']})")
+            continue
         asr.transcribe(audio, sr)
         ts = [asr.transcribe(audio, sr) for _ in range(3)]
         enc = float(np.median([t.encoder_ms for t in ts]))
@@ -185,19 +200,24 @@ def write_md(rep: dict, path: Path) -> None:
          "## ONNX models, CPU vs NPU (median of 30 runs, random inputs, same graph)", "",
          "| Model | CPU ms | NPU ms | Speedup | Active EP |", "|---|---:|---:|---:|---|"]
     for r in rep["onnx"]:
-        L.append(f"| {r['dir']}/{r['model']} | {r['cpu_ms']:.2f} | {r.get('npu_ms', float('nan')):.2f} | {r.get('speedup', 0):.1f}x | {'QNN (NPU)' if r.get('npu_active') else 'CPU fallback'} |")
+        cpu = f"{r['cpu_ms']:.2f}" if r.get("cpu_ms") is not None else "n/a (" + r.get("cpu_note", "") + ")"
+        sp = f"{r['speedup']:.1f}x" if r.get("speedup") else ""
+        L.append(f"| {r['dir']}/{r['model']} | {cpu} | {r.get('npu_ms', float('nan')):.2f} | {sp} | {'QNN (NPU)' if r.get('npu_active') else 'CPU fallback'} |")
     f = rep.get("face", {})
     if "npu" in f:
         L += ["", "## Face tracking pipeline (detector + 468-pt mesh + pose, real 1280x720 frame)", "",
               "| Path | ms / frame | fps |", "|---|---:|---:|",
               f"| NPU | {f['npu']['ms_per_frame']} | {f['npu']['fps']} |", f"| CPU | {f['cpu']['ms_per_frame']} | {f['cpu']['fps']} |"]
     w = rep.get("whisper", {})
-    if "npu" in w:
+    if "npu" in w and "encoder_ms" in w["npu"]:
         L += ["", f"## Whisper base ({w['npu']['audio_s']} s clip, {w['npu']['tokens']} tokens)", "",
               "| Path | Encoder ms | Decoder ms | ms / token |", "|---|---:|---:|---:|",
-              f"| NPU | {w['npu']['encoder_ms']} | {w['npu']['decoder_ms']} | {w['npu']['decoder_ms_per_token']} |",
-              f"| CPU | {w['cpu']['encoder_ms']} | {w['cpu']['decoder_ms']} | {w['cpu']['decoder_ms_per_token']} |",
-              "", f"Transcript (NPU): \"{w['npu']['text']}\""]
+              f"| NPU | {w['npu']['encoder_ms']} | {w['npu']['decoder_ms']} | {w['npu']['decoder_ms_per_token']} |"]
+        if "encoder_ms" in w.get("cpu", {}):
+            L.append(f"| CPU | {w['cpu']['encoder_ms']} | {w['cpu']['decoder_ms']} | {w['cpu']['decoder_ms_per_token']} |")
+        else:
+            L.append(f"| CPU | n/a: {w.get('cpu', {}).get('skipped', 'not run')} | | |")
+        L += ["", f"Transcript (NPU): \"{w['npu']['text']}\""]
     t = rep.get("tts", {})
     if t:
         L += ["", "## Piper TTS", "", "| Voice | Audio s | Synth ms | Realtime factor | Unit |", "|---|---:|---:|---:|---|"]

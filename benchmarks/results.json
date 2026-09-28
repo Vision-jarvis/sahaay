@@ -1,0 +1,144 @@
+{
+  "env": {
+    "timestamp": "2026-09-28 19:36",
+    "cpu": "Snapdragon(R) X2 Elite Extreme - X2E94100 - Qualcomm Oryon(TM) CPU",
+    "machine": "ARM64",
+    "python": "3.12.10",
+    "onnxruntime": "1.30.0",
+    "onnxruntime_qnn": "2.6.0",
+    "npu_devices": 1,
+    "ram_gb": 51.1
+  },
+  "onnx": [
+    {
+      "model": "face_detector.onnx",
+      "dir": "mediapipe_face-onnx-float",
+      "cpu_ms": 2.75,
+      "npu_ms": 0.43,
+      "npu_active": true,
+      "providers": [
+        "QNNExecutionProvider",
+        "CPUExecutionProvider"
+      ],
+      "speedup": 6.4
+    },
+    {
+      "model": "face_landmark_detector.onnx",
+      "dir": "mediapipe_face-onnx-float",
+      "cpu_ms": 0.872,
+      "npu_ms": 0.164,
+      "npu_active": true,
+      "providers": [
+        "QNNExecutionProvider",
+        "CPUExecutionProvider"
+      ],
+      "speedup": 5.3
+    },
+    {
+      "model": "encoder.onnx",
+      "dir": "whisper_base-precompiled_qnn_onnx-float-qualcomm_snapdragon_x2_elite",
+      "cpu_ms": null,
+      "cpu_note": "precompiled QNN context, NPU-only artifact",
+      "npu_ms": 21.333,
+      "npu_active": true,
+      "providers": [
+        "QNNExecutionProvider",
+        "CPUExecutionProvider"
+      ],
+      "speedup": null
+    },
+    {
+      "model": "decoder.onnx",
+      "dir": "whisper_base-precompiled_qnn_onnx-float-qualcomm_snapdragon_x2_elite",
+      "cpu_ms": null,
+      "cpu_note": "precompiled QNN context, NPU-only artifact",
+      "npu_ms": 2.656,
+      "npu_active": true,
+      "providers": [
+        "QNNExecutionProvider",
+        "CPUExecutionProvider"
+      ],
+      "speedup": null
+    },
+    {
+      "model": "facemap_3dmm.onnx",
+      "dir": "facemap_3dmm-onnx-float",
+      "cpu_ms": 1.353,
+      "npu_ms": 0.168,
+      "npu_active": true,
+      "providers": [
+        "QNNExecutionProvider",
+        "CPUExecutionProvider"
+      ],
+      "speedup": 8.1
+    }
+  ],
+  "face": {
+    "frame": [
+      720,
+      1280,
+      3
+    ],
+    "npu": {
+      "ms_per_frame": 2.74,
+      "fps": 364.4,
+      "found": 60,
+      "on_npu": true
+    },
+    "cpu": {
+      "ms_per_frame": 25.34,
+      "fps": 39.5,
+      "found": 60,
+      "on_npu": false
+    }
+  },
+  "whisper": {
+    "npu": {
+      "audio_s": 5.58,
+      "encoder_ms": 21.5,
+      "decoder_ms": 57.5,
+      "decoder_ms_per_token": 2.74,
+      "tokens": 21,
+      "text": "Open Notepad and type Hello from the Snapdragon NPU, then press Enter.",
+      "on_npu": true
+    },
+    "cpu": {
+      "skipped": "precompiled QNN context is NPU-only"
+    }
+  },
+  "tts": {
+    "en": {
+      "audio_s": 3.76,
+      "synth_ms": 167.0,
+      "realtime_factor": 22.6,
+      "unit": "CPU"
+    },
+    "hi": {
+      "audio_s": 4.42,
+      "synth_ms": 160.0,
+      "realtime_factor": 27.6,
+      "unit": "CPU"
+    }
+  },
+  "genai": {
+    "llm": {
+      "model": "ai-hub-models/Qwen3-4B-Instruct-2507",
+      "load_s": 10.1,
+      "rss_delta_mb": 5402,
+      "ttft_ms": 243.0,
+      "tokens_per_s": 30.9,
+      "unit": "NPU (QAIRT)"
+    },
+    "vlm": {
+      "model": "ai-hub-models/Qwen3-VL-4B-Instruct",
+      "load_s": 10.1,
+      "rss_delta_mb": 6138,
+      "ttft_ms": 269.0,
+      "total_ms": 2135.0,
+      "tokens": 54,
+      "tokens_per_s": 25.3,
+      "sample": "The screen shows a terminal window with a Python script running a benchmark for an application called “MetalMack.” The main content is a block of code and output, indicating a performance test in prog",
+      "unit": "NPU (QAIRT)"
+    }
+  }
+}

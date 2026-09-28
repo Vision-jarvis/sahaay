@@ -242,9 +242,9 @@ def build(out: Path) -> None:
     d.box(s, ["Arduino switches", "JSON over USB serial (optional)"], Inches(0.5), y0 + Inches(3.3), col, Inches(0.8), fill=PANEL)
     nx = Inches(3.4)
     d.box(s, ["Face detector + 468-pt mesh", "0.4 + 0.2 ms · head pose, blink, mouth"], nx, y0, Inches(3.1), Inches(0.8), fill=PANEL, line=ACCENT)
-    d.box(s, ["Whisper base", "encoder 25 ms, decoder 3 ms/token"], nx, y0 + Inches(1.1), Inches(3.1), Inches(0.8), fill=PANEL, line=ACCENT)
-    d.box(s, ["Qwen3-4B-Instruct", "screen list + speech to JSON tool calls, 33 tok/s"], nx, y0 + Inches(2.2), Inches(3.1), Inches(0.8), fill=PANEL, line=ACCENT)
-    d.box(s, ["Qwen3-VL-4B-Instruct", "describes screen and camera, 30 tok/s"], nx, y0 + Inches(3.3), Inches(3.1), Inches(0.8), fill=PANEL, line=ACCENT)
+    d.box(s, ["Whisper base", "encoder 21 ms, decoder 2.7 ms/token"], nx, y0 + Inches(1.1), Inches(3.1), Inches(0.8), fill=PANEL, line=ACCENT)
+    d.box(s, ["Qwen3-4B-Instruct", "screen list + speech to JSON tool calls, 31 tok/s"], nx, y0 + Inches(2.2), Inches(3.1), Inches(0.8), fill=PANEL, line=ACCENT)
+    d.box(s, ["Qwen3-VL-4B-Instruct", "describes screen and camera, 25 tok/s"], nx, y0 + Inches(3.3), Inches(3.1), Inches(0.8), fill=PANEL, line=ACCENT)
     d.text(s, "HEXAGON NPU", nx, y0 - Inches(0.4), Inches(3.1), Inches(0.35), size=12, color=ACCENT, bold=True, align=PP_ALIGN.CENTER)
     cx = Inches(7.1)
     d.box(s, ["Head cursor + gestures", "joystick, dwell, blink, drag · Win32"], cx, y0, Inches(2.9), Inches(0.8), fill=PANEL, line=DIM)
@@ -254,7 +254,7 @@ def build(out: Path) -> None:
     d.text(s, "ORYON CPU", cx, y0 - Inches(0.4), Inches(2.9), Inches(0.35), size=12, color=DIM, bold=True, align=PP_ALIGN.CENTER)
     ox = Inches(10.6)
     d.box(s, ["Windows", "any app, any control"], ox, y0 + Inches(0.55), Inches(2.3), Inches(0.9), fill=PANEL)
-    d.box(s, ["Piper TTS en / hi", "16x real time"], ox, y0 + Inches(2.2), Inches(2.3), Inches(0.8), fill=PANEL)
+    d.box(s, ["Piper TTS en / hi", "23x real time, CPU"], ox, y0 + Inches(2.2), Inches(2.3), Inches(0.8), fill=PANEL)
     d.box(s, ["HUD + tray", "live per-model latency and compute unit"], ox, y0 + Inches(3.3), Inches(2.3), Inches(0.8), fill=PANEL)
     for i in range(4):
         d.arrow(s, Inches(0.5) + col, y0 + Inches(1.1) * i + Inches(0.4), nx, y0 + Inches(1.1) * i + Inches(0.4))
@@ -284,14 +284,14 @@ def build(out: Path) -> None:
     # 7 Compute cores + performance
     s = d.slide("Measured on the NPU, not estimated", kicker="PERFORMANCE")
     rows = [["Stage", "CPU", "NPU", "Note"],
-            ["Face detector 256x256", ms("face_detector.onnx", "cpu_ms", "2.97") + " ms", ms("face_detector.onnx", "npu_ms", "0.42") + " ms", "7x"],
-            ["Face mesh 192x192", ms("face_landmark_detector.onnx", "cpu_ms", "1.01") + " ms", ms("face_landmark_detector.onnx", "npu_ms", "0.16") + " ms", "6x"],
-            ["Full face pipeline, live 720p", "", f"{face.get('ms_per_frame', 2.7)} ms/frame", f"{face.get('fps', 28)} fps, camera-bound"],
-            ["Whisper encoder (30 s window)", "", f"{wh.get('encoder_ms', 25):.0f} ms", ""],
-            ["Whisper decoder", "", f"{wh.get('decoder_ms_per_token', 3):.1f} ms/token", "a 6 s command in ~100 ms"],
-            ["Qwen3-4B (GenieX)", "", f"{llm.get('ttft_ms', 60):.0f} ms to first token, {llm.get('tokens_per_s', 33)} tok/s", f"loads in {llm.get('load_s', 8)} s"],
-            ["Qwen3-VL-4B screen description", "", f"{vlm.get('ttft_ms', 280):.0f} ms to first token, {vlm.get('tokens_per_s', 30)} tok/s", f"{vlm.get('total_ms', 2300)/1000:.1f} s per description"],
-            ["Piper TTS, 4 s of speech", "230 ms", "", "16x real time"]]
+            ["Face detector 256x256", ms("face_detector.onnx", "cpu_ms", "2.75") + " ms", ms("face_detector.onnx", "npu_ms", "0.43") + " ms", "6x"],
+            ["Face mesh 192x192", ms("face_landmark_detector.onnx", "cpu_ms", "0.87") + " ms", ms("face_landmark_detector.onnx", "npu_ms", "0.16") + " ms", "5x"],
+            ["Full face pipeline, live 720p frame", f"{b.get('face', {}).get('cpu', {}).get('ms_per_frame', 25.3)} ms", f"{face.get('ms_per_frame', 2.7)} ms/frame", "webcam delivers 28 fps"],
+            ["Whisper encoder (30 s window)", "n/a (QNN context)", f"{wh.get('encoder_ms', 21.5):.0f} ms", ""],
+            ["Whisper decoder", "n/a", f"{wh.get('decoder_ms_per_token', 2.7):.1f} ms/token", "a 5.6 s command in 79 ms"],
+            ["Qwen3-4B (GenieX), screen context", "", f"{llm.get('ttft_ms', 243):.0f} ms to first token, {llm.get('tokens_per_s', 30.9)} tok/s", f"loads in {llm.get('load_s', 10)} s"],
+            ["Qwen3-VL-4B screen description", "", f"{vlm.get('ttft_ms', 269):.0f} ms to first token, {vlm.get('tokens_per_s', 25.3)} tok/s", f"loads in {vlm.get('load_s', 10)} s"],
+            ["Piper TTS, 4 s of speech", "167 ms", "", "23x real time"]]
     d.table(s, rows, Inches(0.6), Inches(1.6), Inches(7.6), [Inches(2.8), Inches(1.1), Inches(2.3), Inches(1.4)], size=11, row_h=Inches(0.42))
     d.text(s, "Compute cores used", Inches(8.6), Inches(1.6), Inches(4.2), Inches(0.4), size=16, color=ACCENT, bold=True)
     d.bullets(s, [
@@ -310,7 +310,7 @@ def build(out: Path) -> None:
     d.box(s, ["powershell -ExecutionPolicy Bypass -File install.ps1", "installs ARM64 Python if missing · virtual environment · models for your chipset (one time) · espeak-ng · Start Menu shortcut"],
           Inches(0.7), Inches(1.6), Inches(12), Inches(1.1), fill=PANEL, color=ACCENT, size=18, bold=True)
     d.bullets(s, [
-        "Runs on every Snapdragon X, X Plus, X Elite, X2 Plus and X2 Elite PC,| including HP OmniBook X, 5, 3, Ultra and EliteBook Ultra. 16 GB RAM recommended; --no-vlm on tighter machines.",
+        "Runs on every Snapdragon X, X Plus, X Elite, X2 Plus and X2 Elite PC,| including HP OmniBook X, 5, 3, Ultra and EliteBook Ultra. Hands-free mode within 16 GB; both generative models resident on 32 GB (LLM 5.4 GB, VLM 6.1 GB measured), or the 2B vision model on 16 GB.",
         "No admin rights, no account, no cloud.| Frames, audio and screenshots stay in RAM. Log file for support.",
         "Accessible by design:| global hotkeys, tray toggles, spoken confirmation of every action, a heads-up panel that shows what was heard and done, English and Hindi voices.",
         "Switch access:| a five-line JSON protocol turns any Arduino, including the UNO Q from the AI Lab kit, into a Sahaay switch. Try it in the Wokwi simulator without hardware.",
@@ -329,7 +329,7 @@ def build(out: Path) -> None:
     d.bullets(s, [
         "What is new:| not a head mouse and not a screen reader, but one conversational layer over Windows that sees the screen the way the user needs, on the NPU, in Hindi and English.",
         "Fits the program:| HP India targets students with the OmniBook 3 and 5; Qualcomm India wants Snapdragon PCs under Rs 60,000. Sahaay makes that laptop an assistive device.",
-        "Scales with silicon:| built within 45 TOPS and 16 GB; on the 80 TOPS X2 the same code runs bigger vision models and adds gaze.",
+        "Scales with silicon:| built for 45 TOPS; hands-free mode fits 16 GB, the full stack 32 GB; on the 80 TOPS X2 the same code runs bigger vision models and adds gaze.",
     ], Inches(8.9), Inches(1.6), Inches(4), Inches(5), size=12, gap=10)
 
     # 10 Development flow + hard parts
