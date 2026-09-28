@@ -1,0 +1,35 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><link rel="stylesheet" href="deck.css">
+<style>
+  .cmp { margin-top: 56px; display: grid; grid-template-columns: 1.3fr 1fr 1fr; border-top: 2px solid var(--ink); }
+  .cmp > div { padding: 18px 18px 18px 0; border-bottom: 1px solid var(--hair); font-size: 25px; line-height: 1.35; color: var(--ink-2); }
+  .cmp .h { font-size: 19px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); padding: 16px 0 14px; }
+  .cmp .h.npu { color: var(--teal); }
+  .cmp .need { color: var(--ink); font-weight: 600; }
+  .cmp .no { color: var(--muted); }
+  .cmp .yes { color: var(--teal); font-weight: 650; }
+  .fit { margin-top: 30px; display: grid; grid-template-columns: 1fr 1fr; gap: 48px; }
+  .fit p { font-size: 25px; line-height: 1.42; color: var(--ink-2); }
+  .fit p b { color: var(--ink); font-weight: 650; }
+  .fit .q { font-family: var(--serif); font-style: italic; font-variation-settings: "opsz" 48, "SOFT" 100, "WONK" 1; font-size: 27px; color: var(--ink); line-height: 1.3; }
+  .fit .src { font-size: 18px; color: var(--muted); margin-top: 6px; }
+</style></head>
+<body><div class="slide">
+  <div class="kicker">Why on-device, why now</div>
+  <h2>Every reason this must run on the laptop is a reason it must run <em>on the NPU.</em></h2>
+  <div class="cmp">
+    <div class="h">What a disabled user needs</div><div class="h">Cloud assistant</div><div class="h npu">Sahaay on the Hexagon NPU</div>
+    <div class="need">A camera on your face all day, a screen with your bank statement</div><div class="no">Uploaded, frame by frame</div><div class="yes">Never leaves RAM</div>
+    <div class="need">Cursor latency a person can tolerate</div><div class="no">100 ms and up, network dependent</div><div class="yes">2.7 ms per frame</div>
+    <div class="need">Hostel Wi-Fi, a hospital ward, a train, a village on 4G</div><div class="no">Stops working</div><div class="yes">Fully offline</div>
+    <div class="need">A laptop that is your only interface must last the day</div><div class="no">CPU or GPU inference drains it</div><div class="yes">NPU runs the whole stack at a few watts</div>
+    <div class="need">Cost to a student</div><div class="no">Subscription plus per-minute speech APIs</div><div class="yes">Zero, forever</div>
+  </div>
+  <div class="fit">
+    <div><div class="q">HP India expects AI PCs to reach half of the country&rsquo;s PC sales within a few years, and aims the OmniBook 3 and 5 at students.</div><div class="src">HP India launch coverage, 2024 to 2026, paraphrased</div></div>
+    <div><div class="q">Qualcomm India&rsquo;s stated goal is Snapdragon PCs below ₹60,000, with on-device AI that does not depend on data costs or bandwidth.</div><div class="src">Qualcomm India interviews on the Snapdragon X roadmap, paraphrased</div></div>
+  </div>
+  <div class="foot"><span><span class="dot"></span>Sahaay</span><span>10</span></div>
+</div>
+<!-- notes: The on-device case is not a slogan here: privacy of a face camera, sub-frame cursor latency, offline reliability, battery, and cost are each individually decisive for this user. HP and Qualcomm India are both aiming the hardware at students, exactly the population Sahaay serves. -->
+</body></html>

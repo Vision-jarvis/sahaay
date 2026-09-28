@@ -1,0 +1,41 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><link rel="stylesheet" href="deck.css">
+<style>
+  .people { display: grid; grid-template-columns: 1fr 1fr; gap: 72px; margin-top: 64px; }
+  .person { display: grid; grid-template-columns: 380px 1fr; gap: 40px; align-items: center; }
+  .portrait { width: 380px; height: 380px; border-radius: 28px; object-fit: cover; background: var(--paper-2); border: 1px solid var(--hair); }
+  .person h3 { font-family: var(--serif); font-variation-settings: "opsz" 72, "SOFT" 60; font-weight: 500; font-size: 52px; letter-spacing: -.01em; line-height: 1.05; }
+  .person .who { font-size: 24px; color: var(--muted); margin-top: 8px; }
+  .person .quote { font-size: 30px; line-height: 1.4; margin-top: 26px; color: var(--ink-2); }
+  .person .quote b { color: var(--ink); font-weight: 650; }
+  .person .mark { width: 56px; height: 8px; border-radius: 4px; margin-top: 26px; }
+  .note { position: absolute; left: 112px; bottom: 96px; font-size: 20px; color: var(--muted); }
+</style></head>
+<body><div class="slide">
+  <div class="kicker">Two people</div>
+  <h2>A laptop is only a laptop if you can <em>move a mouse</em> and <em>see a screen.</em></h2>
+  <div class="people">
+    <div class="person">
+      <img class="portrait" src="img/persona_arjun.png" onerror="this.style.visibility='hidden'">
+      <div>
+        <h3>Arjun, 22</h3>
+        <div class="who">Engineering student · cerebral palsy</div>
+        <div class="quote">Cannot hold a trackpad steady. Every assignment, portal and chat needs <b>someone else's hands.</b></div>
+        <div class="mark" style="background: var(--saffron)"></div>
+      </div>
+    </div>
+    <div class="person">
+      <img class="portrait" src="img/persona_meena.png" onerror="this.style.visibility='hidden'">
+      <div>
+        <h3>Meena, 58</h3>
+        <div class="who">Shopkeeper · low vision, diabetic retinopathy</div>
+        <div class="quote">Can hear a screen reader list forty buttons. <b>Cannot see the photo her daughter sent</b>, or the chart in her bank app.</div>
+        <div class="mark" style="background: var(--teal)"></div>
+      </div>
+    </div>
+  </div>
+  <div class="note">Composite personas drawn from published accessibility research; illustrations, not real people.</div>
+  <div class="foot"><span><span class="dot"></span>Sahaay</span><span>02</span></div>
+</div>
+<!-- notes: Two composite users. Arjun has a movement disability; the mouse and keyboard are the barrier. Meena has low vision; the screen reader reads controls but cannot describe a photo, a chart or the room. Sahaay serves both with one on-device brain. -->
+</body></html>

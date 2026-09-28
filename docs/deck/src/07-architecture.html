@@ -1,0 +1,81 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><link rel="stylesheet" href="deck.css">
+<style>
+  body { background: var(--night); }
+  .diagram { margin-top: 40px; position: relative; width: 1696px; height: 700px; }
+  svg { width: 1696px; height: 700px; overflow: visible; }
+  .lbl { font-family: "Inter", sans-serif; font-size: 22px; fill: #E8EDF2; font-weight: 600; }
+  .sub { font-family: "Inter", sans-serif; font-size: 18px; fill: #8A97A6; }
+  .ms { font-family: "JetBrains Mono", monospace; font-size: 18px; fill: #2FBF8F; font-weight: 600; }
+  .zone { font-family: "Inter", sans-serif; font-size: 18px; font-weight: 700; letter-spacing: .14em; fill: #2FBF8F; }
+  .zone.cpu { fill: #8A97A6; }
+  .box { fill: #171E25; stroke: #2A333C; stroke-width: 1.5; }
+  .box.npu { stroke: #2FBF8F; stroke-opacity: .8; }
+  .box.out { stroke: #E8632B; stroke-opacity: .8; }
+  .flow { stroke: #3A4550; stroke-width: 2; fill: none; }
+  .flow.hot { stroke: #2FBF8F; stroke-opacity: .7; }
+  .flow.warm { stroke: #E8632B; stroke-opacity: .8; }
+  .legend { position: absolute; left: 0; bottom: -20px; display: flex; gap: 36px; font-size: 20px; color: var(--night-muted); align-items: center; }
+  .legend i { display: inline-block; width: 34px; height: 3px; margin-right: 10px; vertical-align: middle; border-radius: 2px; }
+</style></head>
+<body class="night"><div class="slide">
+  <div class="kicker">How it works</div>
+  <h2>Six models on one NPU. <em>The CPU only moves the mouse.</em></h2>
+  <div class="diagram">
+  <svg viewBox="0 0 1696 700">
+    <defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#3A4550"/></marker>
+          <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#2FBF8F" fill-opacity=".8"/></marker>
+          <marker id="aw" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#E8632B" fill-opacity=".9"/></marker></defs>
+
+    <!-- zones -->
+    <text x="0" y="28" class="zone cpu">SENSES · CPU</text>
+    <rect x="440" y="0" width="560" height="640" rx="26" fill="#2FBF8F" fill-opacity=".05" stroke="#2FBF8F" stroke-opacity=".25" stroke-dasharray="0"/>
+    <text x="470" y="38" class="zone">HEXAGON NPU · 80 TOPS ON X2, 45 ON X ELITE</text>
+    <text x="1080" y="28" class="zone cpu">ACTS · CPU</text>
+    <text x="1460" y="28" class="zone cpu">WINDOWS</text>
+
+    <!-- senses -->
+    <g><rect x="0" y="70" width="330" height="88" rx="16" class="box"/><text x="24" y="106" class="lbl">Webcam</text><text x="24" y="136" class="sub">1280×720 · 28 fps</text></g>
+    <g><rect x="0" y="200" width="330" height="88" rx="16" class="box"/><text x="24" y="236" class="lbl">Microphone</text><text x="24" y="266" class="sub">16 kHz · voice activity detection</text></g>
+    <g><rect x="0" y="330" width="330" height="88" rx="16" class="box"/><text x="24" y="366" class="lbl">Screen</text><text x="24" y="396" class="sub">UI Automation tree + screenshot</text></g>
+    <g><rect x="0" y="460" width="330" height="88" rx="16" class="box"/><text x="24" y="496" class="lbl">Arduino switches</text><text x="24" y="526" class="sub">JSON over USB serial · optional</text></g>
+
+    <!-- NPU models -->
+    <g><rect x="470" y="70" width="500" height="96" rx="16" class="box npu"/><text x="494" y="106" class="lbl">Face detector + 468-point mesh</text><text x="494" y="138" class="sub">head pose · blink · mouth</text><text x="860" y="138" class="ms">0.6 ms</text></g>
+    <g><rect x="470" y="190" width="500" height="96" rx="16" class="box npu"/><text x="494" y="226" class="lbl">Whisper base</text><text x="494" y="258" class="sub">English + Hindi · encoder + decoder</text><text x="860" y="258" class="ms">79 ms</text></g>
+    <g><rect x="470" y="310" width="500" height="96" rx="16" class="box npu"/><text x="494" y="346" class="lbl">Qwen3-4B-Instruct</text><text x="494" y="378" class="sub">screen list + speech → JSON tool calls</text><text x="836" y="378" class="ms">31 tok/s</text></g>
+    <g><rect x="470" y="430" width="500" height="96" rx="16" class="box npu"/><text x="494" y="466" class="lbl">Qwen3-VL-4B-Instruct</text><text x="494" y="498" class="sub">describes the screen and the camera</text><text x="836" y="498" class="ms">25 tok/s</text></g>
+    <text x="470" y="590" class="sub">Qualcomm AI Hub models · ONNX Runtime QNN (HTP) · GenieX (QAIRT) · every op profiled on the NPU</text>
+
+    <!-- acts -->
+    <g><rect x="1080" y="70" width="330" height="96" rx="16" class="box"/><text x="1104" y="106" class="lbl">Head cursor + gestures</text><text x="1104" y="138" class="sub">joystick · dwell ring · blink · drag</text></g>
+    <g><rect x="1080" y="190" width="330" height="96" rx="16" class="box"/><text x="1104" y="226" class="lbl">Fast grammar</text><text x="1104" y="258" class="sub">25 commands · under 1 ms</text></g>
+    <g><rect x="1080" y="310" width="330" height="96" rx="16" class="box"/><text x="1104" y="346" class="lbl">Validator + executor</text><text x="1104" y="378" class="sub">schema · allow-list · SendInput · UIA</text></g>
+    <g><rect x="1080" y="430" width="330" height="96" rx="16" class="box"/><text x="1104" y="466" class="lbl">Piper TTS · en / hi</text><text x="1104" y="498" class="sub">23× real time</text></g>
+
+    <!-- windows -->
+    <g><rect x="1460" y="190" width="236" height="150" rx="16" class="box out"/><text x="1484" y="240" class="lbl">Any app,</text><text x="1484" y="272" class="lbl">any control</text><text x="1484" y="310" class="sub">clicks, keys, text</text></g>
+    <g><rect x="1460" y="430" width="236" height="96" rx="16" class="box out"/><text x="1484" y="466" class="lbl">Speaker</text><text x="1484" y="498" class="sub">spoken confirmation</text></g>
+
+    <!-- flows -->
+    <path class="flow hot" d="M330,114 C400,114 400,118 470,118" marker-end="url(#ah)"/>
+    <path class="flow hot" d="M330,244 C400,244 400,238 470,238" marker-end="url(#ah)"/>
+    <path class="flow hot" d="M330,374 C400,374 400,358 470,358" marker-end="url(#ah)"/>
+    <path class="flow hot" d="M330,374 C400,374 400,478 470,478" marker-end="url(#ah)"/>
+    <path class="flow" d="M330,504 L380,504 Q400,504 400,524 L400,660 Q400,680 420,680 L1020,680 Q1040,680 1040,660 L1040,415 Q1040,395 1060,395 L1080,395" marker-end="url(#a)"/>
+    <path class="flow hot" d="M970,118 C1030,118 1030,118 1080,118" marker-end="url(#ah)"/>
+    <path class="flow hot" d="M970,238 C1030,238 1030,238 1080,238" marker-end="url(#ah)"/>
+    <path class="flow hot" d="M970,358 C1030,358 1030,358 1080,358" marker-end="url(#ah)"/>
+    <path class="flow hot" d="M970,478 C1030,478 1030,478 1080,478" marker-end="url(#ah)"/>
+    <path class="flow" d="M1245,166 L1245,190" marker-end="url(#a)"/>
+    <path class="flow" d="M1245,286 L1245,310" marker-end="url(#a)"/>
+    <path class="flow warm" d="M1410,358 C1440,358 1440,265 1460,265" marker-end="url(#aw)"/>
+    <path class="flow warm" d="M1410,478 C1440,478 1440,478 1460,478" marker-end="url(#aw)"/>
+    <path class="flow" d="M1245,406 L1245,430" marker-end="url(#a)"/>
+  </svg>
+  <div class="legend"><span><i style="background:#2FBF8F"></i>neural network, runs on the NPU</span><span><i style="background:#3A4550"></i>plain code, CPU</span><span><i style="background:#E8632B"></i>effect on Windows</span><span>GPU: untouched, left to the user's apps</span></div>
+  </div>
+  <div class="foot"><span><span class="dot"></span>Sahaay</span><span>07</span></div>
+</div>
+<!-- notes: Compute cores used. NPU: face detector, face mesh, Whisper encoder and decoder, Qwen3-4B, Qwen3-VL-4B. CPU: capture, VAD, UI Automation, the command grammar, JSON validation, cursor maths and SendInput, TTS. GPU: nothing by design. -->
+</body></html>

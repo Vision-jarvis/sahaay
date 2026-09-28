@@ -1,0 +1,25 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><link rel="stylesheet" href="deck.css">
+<style>
+  .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 56px; margin-top: 88px; }
+  .stat .value { font-size: 128px; }
+  .stat .value .unit { font-size: 44px; }
+  .stat .label { font-size: 27px; max-width: 470px; margin-top: 14px; }
+  .stat .src { font-size: 19px; color: var(--muted); margin-top: 18px; }
+  .stat .bar { width: 64px; height: 8px; border-radius: 4px; margin-bottom: 26px; }
+  .punch { margin-top: 96px; font-family: var(--serif); font-variation-settings: "opsz" 72, "SOFT" 40; font-size: 46px; line-height: 1.2; max-width: 1500px; letter-spacing: -.01em; }
+  .punch em { font-style: italic; color: var(--saffron); }
+</style></head>
+<body><div class="slide">
+  <div class="kicker">The problem</div>
+  <h2>Assistive technology is priced like a hospital device and built for the cloud.</h2>
+  <div class="stats">
+    <div class="stat"><div class="bar" style="background: var(--saffron)"></div><div class="value">2.68<span class="unit">crore</span></div><div class="label">Indians live with a disability. Roughly one in five with movement, one in five with vision.</div><div class="src">Census of India 2011</div></div>
+    <div class="stat"><div class="bar" style="background: var(--saffron)"></div><div class="value">₹1.5<span class="unit">lakh+</span></div><div class="label">for a commercial eye-gaze system, plus a dongle, a licence and often an internet connection.</div><div class="src">Typical market pricing, 2026</div></div>
+    <div class="stat"><div class="bar" style="background: var(--saffron)"></div><div class="value">0</div><div class="label">cloud assistants that can watch your face all day and read your bank statement without sending both to a server.</div><div class="src">Privacy, latency and connectivity</div></div>
+  </div>
+  <div class="punch">Built-in accessibility reads buttons. It cannot describe a photo, a chart, or the room. <em>And it still needs your hands.</em></div>
+  <div class="foot"><span><span class="dot"></span>Sahaay</span><span>03</span></div>
+</div>
+<!-- notes: The scale of the need, the price of the current answer, and why the cloud cannot be the answer for a camera pointed at your face and a screen showing your bank statement. -->
+</body></html>

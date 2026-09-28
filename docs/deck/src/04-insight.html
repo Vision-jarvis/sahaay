@@ -1,0 +1,31 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><link rel="stylesheet" href="deck.css">
+<style>
+  body { background: var(--night); }
+  .art { position: absolute; right: 0; top: 0; width: 1100px; height: 1080px; object-fit: cover; object-position: right center; }
+  .wash { position: absolute; inset: 0; background: linear-gradient(90deg, var(--night) 0%, var(--night) 42%, rgba(15,20,24,0) 70%); }
+  .copy { position: absolute; left: 112px; top: 200px; width: 860px; }
+  .copy h2 { font-size: 78px; max-width: 860px; }
+  .copy p.lede { max-width: 780px; }
+  .prices { display: flex; gap: 40px; margin-top: 64px; }
+  .price { flex: 1; border: 1px solid var(--night-hair); border-radius: 22px; padding: 28px 32px; background: var(--night-2); }
+  .price .v { font-family: var(--sans); font-weight: 700; font-size: 64px; letter-spacing: -.02em; line-height: 1; }
+  .price .l { font-size: 22px; color: var(--night-muted); margin-top: 12px; line-height: 1.35; }
+  .price.hi .v { color: var(--npu); }
+</style></head>
+<body class="night"><div class="slide">
+  <img class="art" src="img/npu.png" onerror="this.style.display='none'">
+  <div class="wash"></div>
+  <div class="copy">
+    <div class="kicker">The insight</div>
+    <h2>The NPU inside a ₹60,000 laptop <em>is</em> the assistive device.</h2>
+    <p class="lede">A Snapdragon Hexagon NPU runs face tracking, speech, a language model and a vision model at the same time, at a few watts, with nothing leaving the machine. HP ships it in the OmniBook that students already buy.</p>
+    <div class="prices">
+      <div class="price"><div class="v">₹1.5 L+</div><div class="l">eye-gaze hardware, licence, cloud account</div></div>
+      <div class="price hi"><div class="v">₹0</div><div class="l">Sahaay: a download for the laptop you already own</div></div>
+    </div>
+  </div>
+  <div class="foot"><span><span class="dot"></span>Sahaay</span><span>04</span></div>
+</div>
+<!-- notes: The thesis in one line. The NPU is not a feature to show off; it is what makes a mass-market laptop into an assistive device that respects privacy and works offline. -->
+</body></html>

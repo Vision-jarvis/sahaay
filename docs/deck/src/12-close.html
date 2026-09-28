@@ -1,0 +1,34 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><link rel="stylesheet" href="deck.css">
+<style>
+  .wrap { display: grid; grid-template-columns: 1.1fr 1fr; gap: 80px; margin-top: 56px; }
+  ul.points li { font-size: 27px; }
+  .ask { background: var(--night); color: var(--night-ink); border-radius: 28px; padding: 44px 48px; }
+  .ask h3 { font-family: var(--serif); font-variation-settings: "opsz" 72, "SOFT" 60; font-weight: 500; font-size: 46px; line-height: 1.1; letter-spacing: -.01em; }
+  .ask h3 em { font-style: italic; color: var(--npu); }
+  .ask p { font-size: 24px; color: var(--night-muted); margin-top: 22px; line-height: 1.45; }
+  .ask .repo { margin-top: 36px; font-family: var(--mono); font-size: 26px; color: var(--npu); }
+  .ask .me { margin-top: 30px; font-size: 22px; color: var(--night-ink); }
+  .ask .me b { display: block; font-size: 26px; color: #fff; }
+</style></head>
+<body><div class="slide">
+  <div class="kicker">Next</div>
+  <h2>Sahaay works today. Here is what <em>the next quarter</em> looks like.</h2>
+  <div class="wrap">
+    <ul class="points">
+      <li><b>Gaze on the NPU.</b> The AI Hub eyegaze model for coarse screen-region selection alongside head pose, for people with very limited neck movement.</li>
+      <li><b>Piper on the NPU, Hindi and Hinglish commands.</b> The AI Hub Piper recipe, and a command grammar that understands "neeche scroll karo".</li>
+      <li><b>Grounding from the vision model.</b> "Click the blue button" when an app has no accessibility tree: games, canvases, remote desktops.</li>
+      <li><b>Trials with an assistive-technology centre.</b> Calibration profiles for tremor and limited range; an MSIX package for the Microsoft Store.</li>
+    </ul>
+    <div class="ask">
+      <h3>A ₹60,000 laptop that <em>anyone</em> can use, because the NPU is already inside it.</h3>
+      <p>Everything in this deck is in the repository: code, benchmarks, installer, model packs and the reviewer tools that prove the NPU is doing the work.</p>
+      <div class="repo">github.com/Vision-jarvis/sahaay</div>
+      <div class="me"><b>Ruhan Srivastava</b>IIT Kharagpur · built on a Snapdragon X2 Elite with Qualcomm AI Hub, ONNX Runtime QNN and GenieX</div>
+    </div>
+  </div>
+  <div class="foot"><span><span class="dot"></span>Sahaay</span><span>12 · thank you</span></div>
+</div>
+<!-- notes: Roadmap and close. The repository contains everything needed to reproduce every claim. -->
+</body></html>

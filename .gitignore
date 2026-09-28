@@ -27,3 +27,6 @@ settings.local.json
 Thumbs.db
 .vscode/
 .idea/
+
+# rendered slide frames (reproducible with docs/deck/render.py)
+docs/deck/out/
