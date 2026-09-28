@@ -1,37 +1,27 @@
 <!doctype html>
 <html><head><meta charset="utf-8"><link rel="stylesheet" href="deck.css">
 <style>
-  body { background: var(--night); }
-  .cols { display: grid; grid-template-columns: 1.1fr 1fr; gap: 72px; margin-top: 52px; }
-  .timeline { position: relative; padding-left: 44px; }
-  .timeline::before { content: ""; position: absolute; left: 10px; top: 12px; bottom: 12px; width: 2px; background: var(--night-hair); }
-  .step { position: relative; margin-bottom: 26px; }
-  .step::before { content: ""; position: absolute; left: -40px; top: 12px; width: 14px; height: 14px; border-radius: 50%; background: var(--npu); box-shadow: 0 0 0 4px var(--night); }
-  .step b { display: block; font-size: 26px; color: #fff; font-weight: 650; }
-  .step span { font-size: 22px; color: var(--night-muted); line-height: 1.4; }
-  .side h3 { font-family: var(--sans); font-weight: 700; font-size: 22px; letter-spacing: .1em; text-transform: uppercase; margin-bottom: 16px; }
-  .side h3.easy { color: var(--npu); } .side h3.hard { color: #F08A5A; margin-top: 44px; }
-  .side p { font-size: 24px; line-height: 1.45; color: var(--night-ink); }
-  .side p b { color: #fff; }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px 24px; margin-top: 32px; }
+  .item { background: var(--panel); border: 1px solid var(--hair); border-radius: 14px; padding: 18px 24px; display: grid; grid-template-columns: 44px 1fr; gap: 16px; }
+  .item .no { font-family: var(--mono); font-size: 18px; color: var(--red); font-weight: 600; padding-top: 4px; }
+  .item h3 { font-family: var(--display); font-weight: 600; font-size: 24px; letter-spacing: -.01em; line-height: 1.15; }
+  .item p { font-size: 18px; color: var(--ink-2); line-height: 1.38; margin-top: 6px; }
+  .item p b { color: var(--ink); font-weight: 650; }
+  .item p code { font-family: var(--mono); font-size: 17px; color: var(--ink); background: var(--panel-2); padding: 1px 6px; border-radius: 4px; }
 </style></head>
-<body class="night"><div class="slide">
-  <div class="kicker">How it was built</div>
-  <h2>Three days, one laptop. <em>What was easy, what was hard.</em></h2>
-  <div class="cols">
-    <div class="timeline">
-      <div class="step"><b>Prove the toolchain</b><span>ONNX Runtime QNN on ARM64 Python, AI Hub, GenieX. Found the silent CPU fallback and fixed it in npu.py before writing a line of product.</span></div>
-      <div class="step"><b>Face, then cursor</b><span>AI Hub export, Qualcomm's MediaPipe pipeline re-done in numpy, head pose and blink metrics; joystick mapping, dwell ring, gestures, calibration.</span></div>
-      <div class="step"><b>Speech, then brain</b><span>Precompiled Whisper with a KV-cache decode loop; two-tier commands; Qwen3-4B with a strict tool schema and a UI Automation snapshot.</span></div>
-      <div class="step"><b>Narrator, app, deployment</b><span>Qwen3-VL, Piper in English and Hindi, overlay, tray, hotkeys, logging, installer, model fetcher, benchmark suite, Arduino bridge.</span></div>
-    </div>
-    <div class="side">
-      <h3 class="easy">Easy</h3>
-      <p><b>Qualcomm AI Hub.</b> Every model compiled and profiled on real X2 Elite and X Elite devices in minutes, with per-op compute-unit reports. <b>GenieX</b> made the language and vision models a pip install and one pull, on the NPU first try.</p>
-      <h3 class="hard">Hard</h3>
-      <p>Windows ARM64 plumbing. No OpenCV wheel, so the camera goes through DirectShow COM. Piper's espeak bridge is not built for ARM64. QNN context caches must be reused, not regenerated. Two GenieX models cannot load at the same moment. And <b>the QNN provider must be chosen through the new device API</b>, or ONNX Runtime quietly runs on the CPU while reporting nothing.</p>
-    </div>
+<body><div class="slide">
+  <div class="kicker">10 · Engineering challenges</div>
+  <h2>Seven problems between the models and a working product, and their fixes.</h2>
+  <div class="grid">
+    <div class="item"><div class="no">01</div><div><h3>ONNX Runtime silently ran on the CPU while claiming the NPU</h3><p>With the current plugin packaging, <code>providers=["QNNExecutionProvider"]</code> is accepted and ignored. <b>Fix:</b> register the QNN plugin, pick the NPU device through the device API, assert the active provider on every session, and ship <code>npu_check.py</code> so a reviewer can see it.</p></div></div>
+    <div class="item"><div class="no">02</div><div><h3>No OpenCV for Windows on ARM64</h3><p>The camera and every image operation had to work without it. <b>Fix:</b> DirectShow through COM for capture (with <code>CoInitialize</code> on every worker thread), Pillow and numpy for the MediaPipe letterbox, affine crop and landmark mapping.</p></div></div>
+    <div class="item"><div class="no">03</div><div><h3>Whisper ships as a precompiled QNN context with no Python runner</h3><p>Qualcomm's reference decode loop needs torch. <b>Fix:</b> re-implemented the encoder call and the 200-step KV-cache decoder loop in numpy: six layers of self-attention cache, causal mask and forced language prefix.</p></div></div>
+    <div class="item"><div class="no">04</div><div><h3>Piper's phonemiser is not built for ARM64</h3><p>The wheel's espeak bridge fails to import. <b>Fix:</b> phonemise through the espeak-ng CLI and drive the VITS ONNX graph directly; English and Hindi voices at 23× real time.</p></div></div>
+    <div class="item"><div class="no">05</div><div><h3>Two GenieX models cannot initialise at the same time</h3><p>Concurrent loads fail to create HTP contexts. <b>Fix:</b> a single loader thread brings up the language model, then the vision model, while the cursor and speech are already live.</p></div></div>
+    <div class="item"><div class="no">06</div><div><h3>A mis-heard fragment launched Windows Search</h3><p>"Open it." from clipped audio became a search for "it". <b>Fix:</b> pronoun and length guards in the grammar, an allow-list of tools and elements, and no search fallback for short tokens.</p></div></div>
+    <div class="item" style="grid-column: 1 / -1; grid-template-columns: 44px 1fr"><div class="no">07</div><div><h3>QNN context caching and chipset generations</h3><p>A cached compiled graph must be reused, not regenerated, and the development laptop's Hexagon v81 binaries do not run on the OmniBook's v73. <b>Fix:</b> reuse the cache when present, invalidate on mismatch, and ship separate model packs per chipset, both profiled on Qualcomm AI Hub.</p></div></div>
   </div>
-  <div class="foot"><span><span class="dot"></span>Sahaay</span><span>11</span></div>
+  <div class="foot"><span>Sahaay</span><span class="n">11 / 12</span></div>
 </div>
-<!-- notes: Development flow and an honest account of the hard parts, in the format Qualcomm uses for its own hackathon write-ups. -->
+<!-- notes: The engineering that made the difference, each with its fix. Items 01 and 07 are the ones most likely to trip other teams claiming NPU numbers. -->
 </body></html>

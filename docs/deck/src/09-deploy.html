@@ -1,36 +1,34 @@
 <!doctype html>
 <html><head><meta charset="utf-8"><link rel="stylesheet" href="deck.css">
 <style>
-  .code { margin-top: 48px; font-size: 30px; padding: 34px 40px; }
-  .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; margin-top: 40px; }
-  .card { min-height: 300px; }
-  .card .ic { width: 52px; height: 52px; border-radius: 14px; display: flex; align-items: center; justify-content: center; margin-bottom: 20px; }
-  .card h3 { font-size: 28px; }
-  .card p { font-size: 22px; }
-  .card p b { color: var(--ink); font-weight: 650; }
+  .code { margin-top: 40px; font-size: 28px; }
+  .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; margin-top: 36px; }
+  .card { min-height: 330px; }
+  .card h3 { margin-top: 18px; font-size: 28px; }
+  .card p { font-size: 21px; }
 </style></head>
 <body><div class="slide">
-  <div class="kicker">Deployment and accessibility</div>
-  <h2>One command to install. <em>Then it never needs the internet again.</em></h2>
-  <div class="code"><span class="c"># any Snapdragon X / X2 PC · HP OmniBook, EliteBook · no admin rights</span><br>powershell -ExecutionPolicy Bypass -File <span class="g">install.ps1</span><br><span class="c"># Python if missing · venv · models for your chipset, once · espeak-ng · Start Menu shortcut</span></div>
+  <div class="kicker">08 · Deployment and accessibility</div>
+  <h2>One command installs it on any Snapdragon X or X2 PC. After that it never needs the internet.</h2>
+  <div class="code"><span class="c"># HP OmniBook, EliteBook, any Snapdragon X / X2 PC · no admin rights</span><br>powershell -ExecutionPolicy Bypass -File <span class="g">install.ps1</span><br><span class="c"># Python if missing · venv · models for your chipset, once · espeak-ng · Start Menu shortcut</span></div>
   <div class="cards">
     <div class="card">
-      <div class="ic" style="background: var(--teal-soft)"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#0E7C6B" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
-      <h3>Private by construction</h3>
-      <p>No account, no cloud, no telemetry. Camera frames, audio and screenshots <b>stay in RAM</b> and are discarded. A local log file for support, nothing else written.</p>
+      <span class="tag">Private</span>
+      <h3>No account, no cloud, no telemetry</h3>
+      <p>Camera frames, audio and screenshots are processed in RAM and discarded. Zero network calls at runtime; verifiable by running with Wi-Fi off. A local log file for support, nothing else written.</p>
     </div>
     <div class="card">
-      <div class="ic" style="background: var(--saffron-soft)"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#E8632B" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="13" rx="2"/><path d="M8 21h8M12 17v4"/></svg></div>
-      <h3>Fits the OmniBook a judge owns</h3>
-      <p><b>Hands-free mode within 16 GB.</b> Both generative models resident on 32 GB (5.4 + 6.1 GB measured), or the 2B vision model on 16 GB. 45 TOPS is enough; 80 TOPS has headroom.</p>
+      <span class="tag">Fits the judge's laptop</span>
+      <h3>16 GB for hands-free mode, 32 GB for everything</h3>
+      <p>Measured process growth: language model <b>5.4 GB</b>, vision model <b>6.1 GB</b>. On a 16 GB OmniBook 3 or 5 run with <span class="mono">--no-vlm</span> or the 2B vision model; on a 32 GB OmniBook X or Ultra load both. 45 TOPS is enough.</p>
     </div>
     <div class="card">
-      <div class="ic" style="background: var(--paper-2)"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#14181C" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg></div>
+      <span class="tag">Accessible</span>
       <h3>Usable without sight or hands</h3>
-      <p>Global hotkeys, a tray icon, a heads-up panel that shows what was heard and done, <b>spoken confirmation of every action</b>, English and Hindi voices, and switch access through any Arduino, including the UNO Q from the AI Lab kit.</p>
+      <p>Global hotkeys, a tray icon, a heads-up panel showing what was heard and done with live per-model latency, spoken confirmation of every action, English and Hindi voices, and switch access through any Arduino, including the UNO Q from the AI Lab kit.</p>
     </div>
   </div>
-  <div class="foot"><span><span class="dot"></span>Sahaay</span><span>09 · reviewer tools: tools/npu_check.py, tools/bench_all.py</span></div>
+  <div class="foot"><span>Sahaay · reviewer tools: tools/npu_check.py, tools/bench_all.py</span><span class="n">09 / 12</span></div>
 </div>
-<!-- notes: Installation is one PowerShell script; runtime is fully offline. The memory figures are measured process growth; the 16 GB OmniBook 3 and 5 run hands-free mode and UI-Automation narration, the 32 GB OmniBook X and Ultra run everything. -->
+<!-- notes: Installation is one PowerShell script; runtime is fully offline. Memory figures are measured process growth. -->
 </body></html>

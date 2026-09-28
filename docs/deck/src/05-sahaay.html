@@ -1,56 +1,48 @@
 <!doctype html>
 <html><head><meta charset="utf-8"><link rel="stylesheet" href="deck.css">
 <style>
-  .modes { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; margin-top: 44px; }
-  .mode { border-radius: 28px; padding: 36px 44px 34px; position: relative; }
-  .mode.hands { background: #fff; border: 1px solid var(--hair); }
-  .mode.eyes { background: var(--night); color: var(--night-ink); }
-  .mode .tag { display: inline-block; font-size: 20px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; padding: 8px 16px; border-radius: 999px; }
-  .hands .tag { background: var(--saffron-soft); color: var(--saffron); }
-  .eyes .tag { background: var(--npu-soft); color: var(--npu); }
-  .mode h3 { font-family: var(--serif); font-variation-settings: "opsz" 72, "SOFT" 60; font-weight: 500; font-size: 48px; line-height: 1.05; margin-top: 18px; letter-spacing: -.01em; }
-  .mode .for { font-size: 23px; color: var(--muted); margin-top: 10px; }
-  .eyes .for { color: var(--night-muted); }
+  .modes { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-top: 44px; }
+  .mode { border-radius: 18px; padding: 34px 40px 30px; background: var(--panel); border: 1px solid var(--hair); }
+  .mode h3 { font-family: var(--display); font-weight: 600; font-size: 40px; line-height: 1.1; margin-top: 18px; letter-spacing: -.015em; }
+  .mode .for { font-family: var(--mono); font-size: 17px; color: var(--muted); margin-top: 10px; letter-spacing: .04em; }
   .mode ul { list-style: none; margin-top: 26px; display: flex; flex-direction: column; gap: 14px; }
-  .mode li { font-size: 25px; line-height: 1.35; padding-left: 40px; position: relative; }
-  .mode li::before { content: ""; position: absolute; left: 0; top: 15px; width: 18px; height: 6px; border-radius: 3px; }
-  .hands li::before { background: var(--saffron); }
-  .eyes li::before { background: var(--npu); }
-  .mode li b { font-weight: 650; }
-  .hands li b { color: var(--ink); }
-  .eyes li b { color: #fff; }
-  .say { font-family: var(--serif); font-style: italic; font-variation-settings: "opsz" 48, "SOFT" 100, "WONK" 1; }
+  .mode li { font-size: 24px; line-height: 1.36; padding-left: 36px; position: relative; color: var(--ink-2); }
+  .mode li::before { content: ""; position: absolute; left: 0; top: 15px; width: 16px; height: 3px; background: var(--red); }
+  .mode li b { color: var(--ink); font-weight: 650; }
+  .say { font-family: var(--mono); font-size: 21px; color: var(--ink); background: var(--panel-2); padding: 2px 8px; border-radius: 4px; }
 </style></head>
 <body><div class="slide">
-  <div class="kicker">Meet Sahaay</div>
-  <h2>One app. Two modes. <em>One brain on the NPU.</em></h2>
+  <div class="kicker">04 · What Sahaay does</div>
+  <h2>Two modes, one on-device brain: hands-free control and a screen narrator.</h2>
   <div class="modes">
-    <div class="mode hands">
-      <span class="tag">Hands-free</span>
-      <h3>Your head is the mouse. Your voice is the keyboard.</h3>
-      <div class="for">For Arjun: motor impairment, injury, RSI</div>
+    <div class="mode">
+      <span class="tag red">Hands-free mode</span>
+      <h3>Head moves the cursor. Voice types and commands.</h3>
+      <div class="for">For motor impairment, injury, RSI</div>
       <ul>
-        <li><b>Nudge your head</b>, the cursor moves. Hold still, it stays. Calibrates itself.</li>
-        <li><b>Blink</b> to click, <b>hold still</b> to click, <b>open your mouth</b> to drag.</li>
-        <li><b>Dictate</b> into any app, in English or Hindi.</li>
-        <li><b>Say it:</b> <span class="say">"open my downloads", "write a thank-you note to my teacher and save it."</span></li>
-        <li><b>Or press a switch.</b> Any Arduino becomes a button interface.</li>
+        <li><b>Head cursor:</b> nudge past a dead zone and the cursor moves; hold still and it stays. Calibrates itself in one second.</li>
+        <li><b>Clicks without hands:</b> short blink = left click, long blink = right click, dwell 0.9 s = click, mouth open = drag.</li>
+        <li><b>Dictation</b> into any application, English and Hindi.</li>
+        <li><b>25 instant commands</b> (click, scroll, press ctrl+s, next window, open Chrome) in under a millisecond.</li>
+        <li><b>Free-form commands</b> through the language model: <span class="say">"open my downloads and sort by date"</span></li>
+        <li><b>Physical switches:</b> any Arduino becomes a click and push-to-talk interface.</li>
       </ul>
     </div>
-    <div class="mode eyes">
-      <span class="tag">Narrator</span>
-      <h3>Ask the screen what it says. Ask the camera what it sees.</h3>
-      <div class="for">For Meena: low vision, blindness</div>
+    <div class="mode">
+      <span class="tag red">Narrator mode</span>
+      <h3>The screen and the camera, described in speech.</h3>
+      <div class="for">For low vision and blindness</div>
       <ul>
-        <li><span class="say">"What's on my screen?"</span> Two spoken sentences: <b>which app, what content, what matters.</b></li>
-        <li><span class="say">"Read this."</span> The paragraph under focus, in her language.</li>
-        <li><span class="say">"Describe the picture."</span> A vision model explains <b>photos, charts, canvases.</b></li>
-        <li><span class="say">"What do you see?"</span> The webcam view, labels and signs, <b>read aloud.</b></li>
-        <li>Every action is <b>confirmed by voice</b>, so she always knows what just happened.</li>
+        <li><span class="say">"what's on my screen"</span> the UI Automation tree summarised in two sentences: which app, what content, what matters.</li>
+        <li><span class="say">"read this"</span> the focused paragraph or field, read aloud.</li>
+        <li><span class="say">"describe the picture"</span> a vision-language model explains photos, charts, canvases, scanned forms.</li>
+        <li><span class="say">"what do you see"</span> the webcam view: people, objects, labels, signs.</li>
+        <li><b>Every action is confirmed by voice</b>, so the user always knows what just happened.</li>
+        <li><b>English and Hindi voices</b>, synthesised on the laptop.</li>
       </ul>
     </div>
   </div>
-  <div class="foot"><span><span class="dot"></span>Sahaay</span><span>05</span></div>
+  <div class="foot"><span>Sahaay</span><span class="n">05 / 12</span></div>
 </div>
-<!-- notes: Two modes that share one on-device brain. Hands-free mode: head cursor, gestures, dictation, free-form voice commands, switch access. Narrator mode: screen summaries, focused reading, vision-language description of screen and camera, spoken confirmation. -->
+<!-- notes: Both modes share the same models and the same executor; they differ only in which inputs and outputs are active. -->
 </body></html>

@@ -1,35 +1,42 @@
 <!doctype html>
 <html><head><meta charset="utf-8"><link rel="stylesheet" href="deck.css">
 <style>
-  .cmp { margin-top: 56px; display: grid; grid-template-columns: 1.3fr 1fr 1fr; border-top: 2px solid var(--ink); }
-  .cmp > div { padding: 18px 18px 18px 0; border-bottom: 1px solid var(--hair); font-size: 25px; line-height: 1.35; color: var(--ink-2); }
-  .cmp .h { font-size: 19px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); padding: 16px 0 14px; }
-  .cmp .h.npu { color: var(--teal); }
-  .cmp .need { color: var(--ink); font-weight: 600; }
-  .cmp .no { color: var(--muted); }
-  .cmp .yes { color: var(--teal); font-weight: 650; }
-  .fit { margin-top: 30px; display: grid; grid-template-columns: 1fr 1fr; gap: 48px; }
-  .fit p { font-size: 25px; line-height: 1.42; color: var(--ink-2); }
-  .fit p b { color: var(--ink); font-weight: 650; }
-  .fit .q { font-family: var(--serif); font-style: italic; font-variation-settings: "opsz" 48, "SOFT" 100, "WONK" 1; font-size: 27px; color: var(--ink); line-height: 1.3; }
-  .fit .src { font-size: 18px; color: var(--muted); margin-top: 6px; }
+  table.data { margin-top: 30px; }
+  table.data th:nth-child(1) { width: 300px; }
+  table.data th:nth-child(2) { width: 560px; }
+  table.data td { padding: 12px 24px 12px 0; font-size: 20px; }
+  table.data td .m { font-size: 16px; margin-top: 4px; }
+  .tradeoff { margin-top: 20px; display: grid; grid-template-columns: 300px 1fr; gap: 24px; align-items: start; border-top: 2px solid var(--red); padding-top: 18px; }
+  .tradeoff .k { font-family: var(--mono); font-size: 16px; letter-spacing: .12em; text-transform: uppercase; color: var(--red); font-weight: 600; padding-top: 6px; }
+  .tradeoff p { font-size: 19px; color: var(--ink-2); line-height: 1.4; }
+  .tradeoff p b { color: var(--ink); font-weight: 650; }
 </style></head>
 <body><div class="slide">
-  <div class="kicker">Why on-device, why now</div>
-  <h2>Every reason this must run on the laptop is a reason it must run <em>on the NPU.</em></h2>
-  <div class="cmp">
-    <div class="h">What a disabled user needs</div><div class="h">Cloud assistant</div><div class="h npu">Sahaay on the Hexagon NPU</div>
-    <div class="need">A camera on your face all day, a screen with your bank statement</div><div class="no">Uploaded, frame by frame</div><div class="yes">Never leaves RAM</div>
-    <div class="need">Cursor latency a person can tolerate</div><div class="no">100 ms and up, network dependent</div><div class="yes">2.7 ms per frame</div>
-    <div class="need">Hostel Wi-Fi, a hospital ward, a train, a village on 4G</div><div class="no">Stops working</div><div class="yes">Fully offline</div>
-    <div class="need">A laptop that is your only interface must last the day</div><div class="no">CPU or GPU inference drains it</div><div class="yes">NPU runs the whole stack at a few watts</div>
-    <div class="need">Cost to a student</div><div class="no">Subscription plus per-minute speech APIs</div><div class="yes">Zero, forever</div>
+  <div class="kicker">09 · On-device versus cloud</div>
+  <h2>Where the cloud fails this user, and the trade-offs Sahaay accepts in return.</h2>
+  <table class="data">
+    <tr><th>What the user needs</th><th>Cloud assistant</th><th>Sahaay on the Hexagon NPU</th></tr>
+    <tr><td class="need">Privacy of a face camera and the screen</td>
+        <td>Frames and screenshots leave the device continuously.<span class="m">Face data is sensitive biometric data under India's DPDP Act 2023 (s.2(t)); the screen carries bank and medical records</span></td>
+        <td class="yes">Processed in RAM, discarded.<span class="m">zero network calls after install; verifiable with Wi-Fi off</span></td></tr>
+    <tr><td class="need">Cursor latency a person can tolerate</td>
+        <td>A network round trip before any inference.<span class="m">typically 50 to 150 ms to a cloud region from India, more on congested mobile links</span></td>
+        <td class="yes">2.7 ms per frame for the cursor; 79 ms for a spoken command.<span class="m">measured, benchmarks/results.md</span></td></tr>
+    <tr><td class="need">Works in a hostel, a hospital ward, a train</td>
+        <td>Stops when the link drops.<span class="m">every command is a request; there is no offline mode</span></td>
+        <td class="yes">Fully offline.<span class="m">6 GB of models cached once; nothing else fetched</span></td></tr>
+    <tr><td class="need">Battery on a laptop that is the only interface</td>
+        <td>Video upload keeps the radio busy; inference still runs somewhere.<span class="m">continuous 720p upload is 1 to 3 Mbps over Wi-Fi or 4G</span></td>
+        <td class="yes">The CPU path would cost 25 ms per frame; the NPU does it in 2.7 ms and the CPU stays idle for the user's apps.<span class="m">measured, same frame</span></td></tr>
+    <tr><td class="need">Cost to a student</td>
+        <td>Per-minute billing for speech, plus vision and language calls.<span class="m">Whisper API at $0.006/min: three hours a day is about ₹2,700 a month, speech alone (₹84/$)</span></td>
+        <td class="yes">Zero after the laptop.<span class="m">no subscription, no API keys</span></td></tr>
+  </table>
+  <div class="tradeoff">
+    <div class="k">Trade-offs we accept</div>
+    <p><b>4-billion-parameter models</b> reason less well than frontier cloud models, so common commands bypass them through a fixed grammar and every model action is validated. <b>Each generative model takes 10 s to load</b> and 5 to 6 GB of RAM. <b>Whisper base mishears in noisy rooms</b>; fragments are dropped rather than acted on.</p>
   </div>
-  <div class="fit">
-    <div><div class="q">HP India expects AI PCs to reach half of the country&rsquo;s PC sales within a few years, and aims the OmniBook 3 and 5 at students.</div><div class="src">HP India launch coverage, 2024 to 2026, paraphrased</div></div>
-    <div><div class="q">Qualcomm India&rsquo;s stated goal is Snapdragon PCs below ₹60,000, with on-device AI that does not depend on data costs or bandwidth.</div><div class="src">Qualcomm India interviews on the Snapdragon X roadmap, paraphrased</div></div>
-  </div>
-  <div class="foot"><span><span class="dot"></span>Sahaay</span><span>10</span></div>
+  <div class="foot"><span>Sahaay</span><span class="n">10 / 12</span></div>
 </div>
-<!-- notes: The on-device case is not a slogan here: privacy of a face camera, sub-frame cursor latency, offline reliability, battery, and cost are each individually decisive for this user. HP and Qualcomm India are both aiming the hardware at students, exactly the population Sahaay serves. -->
+<!-- notes: Each row is a concrete failure of the cloud approach for this user, with a source or a measurement, and the matching measured behaviour of Sahaay. The trade-offs row is deliberate: smaller models, load time and RAM are the price of privacy and offline operation, and the design mitigates each. -->
 </body></html>

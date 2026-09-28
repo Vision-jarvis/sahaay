@@ -30,3 +30,5 @@ Thumbs.db
 
 # rendered slide frames (reproducible with docs/deck/render.py)
 docs/deck/out/
+*.new.pptx
+~$*

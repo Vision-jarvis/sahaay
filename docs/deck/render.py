@@ -65,15 +65,25 @@ def assemble(pngs: list[tuple[Path, Path]]) -> None:
         n = notes_for(html)
         if n:
             s.notes_slide.notes_text_frame.text = n
-    pptx_path = HERE / "Sahaay_Pitch.pptx"
-    prs.save(str(pptx_path))
+    def save_or_fallback(path: Path, saver) -> Path:
+        """If the target is open in PowerPoint or a PDF viewer, write a .new copy instead of failing."""
+        try:
+            saver(path)
+            return path
+        except PermissionError:
+            alt = path.with_name(path.stem + ".new" + path.suffix)
+            saver(alt)
+            print(f"WARNING: {path.name} is open in another program; wrote {alt.name} instead. Close it and rename.")
+            return alt
+
+    pptx_path = save_or_fallback(HERE / "Sahaay_Pitch.pptx", lambda p: prs.save(str(p)))
     # PDF: same frames, JPEG-compressed pages
     pages = []
     for _, png in pngs:
         im = Image.open(png).convert("RGB").resize((2560, 1440), Image.LANCZOS)
         pages.append(im)
-    pdf_path = HERE / "Sahaay_Pitch.pdf"
-    pages[0].save(str(pdf_path), save_all=True, append_images=pages[1:], resolution=192.0, quality=90)
+    pdf_path = save_or_fallback(HERE / "Sahaay_Pitch.pdf",
+                                lambda p: pages[0].save(str(p), save_all=True, append_images=pages[1:], resolution=192.0, quality=90))
     print(f"wrote {pptx_path.name} ({len(pngs)} slides, {pptx_path.stat().st_size/1e6:.1f} MB) and {pdf_path.name} ({pdf_path.stat().st_size/1e6:.1f} MB)")
 
 
