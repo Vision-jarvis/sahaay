@@ -10,6 +10,7 @@ Threads
 """
 from __future__ import annotations
 
+import logging
 import threading
 import time
 import traceback
@@ -18,7 +19,8 @@ import numpy as np
 
 from . import screen as scr
 from .brain import Brain, ToolCall, summarise_screen
-from .config import Settings, model_dir
+from .config import USER_DIR, Settings, model_dir
+
 from .control.actions import Executor
 from .control.cursor import CursorConfig, HeadCursor
 from .speech.mic import Microphone
@@ -29,10 +31,29 @@ from .vision.camera import Camera
 from .vision.describe import Describer
 from .vision.face import FaceTracker
 
+log = logging.getLogger("sahaay")
+
+
+def setup_logging() -> None:
+    """Console plus a rolling file in %LOCALAPPDATA%\\Sahaay\\sahaay.log (flushed per line)."""
+    if log.handlers:
+        return
+    log.setLevel(logging.INFO)
+    fmt = logging.Formatter("%(asctime)s %(levelname).1s %(message)s", "%H:%M:%S")
+    fh = logging.FileHandler(USER_DIR / "sahaay.log", mode="w", encoding="utf-8")
+    fh.setFormatter(fmt)
+    log.addHandler(fh)
+    sh = logging.StreamHandler()
+    sh.setFormatter(fmt)
+    log.addHandler(sh)
+    logging.getLogger("transformers").setLevel(logging.ERROR)
+
 
 class Sahaay:
     def __init__(self, settings: Settings | None = None) -> None:
+        setup_logging()
         self.s = settings or Settings.load()
+        log.info("Sahaay starting; settings: head=%s voice=%s vlm=%s lang=%s", self.s.head_cursor, self.s.voice, self.s.load_vlm, self.s.language)
         self.hud_state = HudState(head_on=self.s.head_cursor, voice_on=self.s.voice)
         self.stop_event = threading.Event()
         self.latest_frame: np.ndarray | None = None
@@ -60,7 +81,7 @@ class Sahaay:
         if self.speaker and self.s.narrator_tts:
             self.speaker.say(text, interrupt=False)
         else:
-            print("[say]", text)
+            log.info("[say] %s", text)
 
     # ---- callbacks for the executor ------------------------------------------------------
     def _describe_screen(self) -> str:
@@ -111,11 +132,13 @@ class Sahaay:
             self.tracker = FaceTracker(model_dir("face"))
             det, lmk = self.tracker.infos()
             unit = "NPU" if self.tracker.on_npu else "CPU"
+            log.info("face models: detector %s, landmarks %s", det.providers, lmk.providers)
             cam = Camera(width=1280, height=720)
             cam.start()
+            log.info("camera started: %s", cam.devices)
         except Exception as exc:
             self.hud_state.note = f"camera/face error: {exc}"
-            traceback.print_exc()
+            log.error("camera/face error: %s\n%s", exc, traceback.format_exc())
             return
         calib: list[tuple[float, float]] = []
         calib_until = time.time() + 1.2  # auto-calibrate at start
@@ -161,11 +184,13 @@ class Sahaay:
         try:
             self.asr = WhisperNPU(model_dir("whisper"))
             unit = "NPU" if self.asr.on_npu else "CPU"
+            log.info("whisper: encoder %s, decoder %s", self.asr.enc_info.providers, self.asr.dec_info.providers)
             self.mic.start()
-            self.mic.calibrate_noise(0.8)
+            thr = self.mic.calibrate_noise(0.8)
+            log.info("mic started, noise threshold %.4f", thr)
         except Exception as exc:
             self.hud_state.note = f"mic/asr error: {exc}"
-            traceback.print_exc()
+            log.error("mic/asr error: %s\n%s", exc, traceback.format_exc())
             return
         self.hud_state.status = "listening"
         while not self.stop_event.is_set():
@@ -193,7 +218,7 @@ class Sahaay:
                 self.handle_utterance(text)
             except Exception as exc:
                 self.hud_state.note = f"voice error: {exc}"
-                traceback.print_exc()
+                log.error("voice error: %s\n%s", exc, traceback.format_exc())
             self.hud_state.status = "listening"
 
     def handle_utterance(self, text: str) -> list[str]:
@@ -217,7 +242,7 @@ class Sahaay:
             calls = fast_parse(text) or [ToolCall("say", {"text": "I heard you, but my language model is not loaded yet."})]
         self.hud_state.action = "; ".join(str(c) for c in calls)[:160]
         results = self.executor.run(calls)
-        print(f"[heard] {text!r} -> {[str(c) for c in calls]} -> {results}")
+        log.info("[heard] %r -> %s -> %s", text, [str(c) for c in calls], results)
         return results
 
     # ---- lifecycle -------------------------------------------------------------------------
@@ -225,7 +250,7 @@ class Sahaay:
         try:
             self.speaker = Speaker(model_dir("piper"))
         except Exception as exc:
-            print("TTS unavailable:", exc)
+            log.warning("TTS unavailable: %s", exc)
         # GenieX bundles must be loaded one at a time (concurrent loads fail to create HTP contexts),
         # so the LLM loads first and the VLM follows on the same thread.
         self.brain = Brain(self.s.llm_model, preload=False)
@@ -233,9 +258,15 @@ class Sahaay:
             self.describer = Describer(self.s.vlm_model, preload=False)
 
         def load_models() -> None:
-            self.brain._load()
-            if self.describer:
-                self.describer._load()
+            try:
+                self.brain._load()
+                log.info("LLM %s loaded in %.1f s", self.brain.model_id, self.brain.load_ms / 1000)
+                if self.describer:
+                    self.describer._load()
+                    log.info("VLM %s loaded in %.1f s", self.describer.model_id, self.describer.load_ms / 1000)
+            except Exception as exc:
+                self.hud_state.note = f"model load error: {exc}"
+                log.error("model load error: %s\n%s", exc, traceback.format_exc())
 
         threading.Thread(target=self.camera_loop, daemon=True, name="camera").start()
         threading.Thread(target=self.voice_loop, daemon=True, name="voice").start()
@@ -261,7 +292,7 @@ class Sahaay:
                 hk["quit"]: self.quit,
             }).start()
         except Exception as exc:
-            print("hotkeys unavailable:", exc)
+            log.warning("hotkeys unavailable: %s", exc)
 
     def _toggle_voice(self) -> None:
         self.s.voice = not self.s.voice
@@ -281,7 +312,7 @@ class Sahaay:
 
             start_tray(self)
         except Exception as exc:
-            print("tray unavailable:", exc)
+            log.warning("tray unavailable: %s", exc)
         self.hud.run()
         self.quit()
 
