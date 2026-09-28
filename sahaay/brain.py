@@ -84,7 +84,17 @@ _rule(r"^(sahaay[, ]+)?(press |hit )(?P<k>(ctrl|control|alt|shift|win|windows)( 
       lambda m: [ToolCall("press_keys", {"keys": re.sub(r"\s*(\+|plus)\s*|\s+", "+", m.group("k").lower()).replace("control", "ctrl").replace("windows", "win")})])
 _rule(r"^(sahaay[, ]+)?scroll (?P<d>up|down)( (?P<n>\d+|a lot|a little))?\.?$",
       lambda m: [ToolCall("scroll", {"direction": m.group("d"), "amount": 8 if m.group("n") == "a lot" else 1 if m.group("n") == "a little" else int(m.group("n") or 3)})])
-_rule(r"^(sahaay[, ]+)?(open|launch|start) (?P<a>.+?)\.?$", lambda m: [ToolCall("open_app", {"name": m.group("a")})])
+_PRONOUNS = {"it", "this", "that", "them", "the", "a", "an", "up", "one", "him", "her", "me", "you"}
+
+
+def _open_rule(m):
+    name = m.group("a").strip().strip(".,!?").lower()
+    if len(name) < 3 or name in _PRONOUNS:
+        return None  # "open it" is a fragment; let the language model use the screen context instead
+    return [ToolCall("open_app", {"name": name})]
+
+
+_rule(r"^(sahaay[, ]+)?(open|launch|start) (?P<a>.+?)\.?$", _open_rule)
 _rule(r"^(sahaay[, ]+)?(switch to|go to|focus) (?P<w>.+?)( window)?\.?$", lambda m: [ToolCall("focus_window", {"title": m.group("w")})])
 _rule(r"^(sahaay[, ]+)?(next window|switch window)\.?$", lambda m: [ToolCall("press_keys", {"keys": "alt+tab"})])
 _rule(r"^(sahaay[, ]+)?(type|likho) (?P<t>.+)$", lambda m: [ToolCall("type_text", {"text": m.group("t")})])
@@ -105,6 +115,8 @@ def fast_parse(text: str) -> list[ToolCall] | None:
         m = pat.match(t)
         if m:
             calls = make(m)
+            if not calls:
+                continue
             for c in calls:
                 c.source = "grammar"
             return calls
