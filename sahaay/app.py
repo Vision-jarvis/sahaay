@@ -271,6 +271,32 @@ class Sahaay:
         threading.Thread(target=self.camera_loop, daemon=True, name="camera").start()
         threading.Thread(target=self.voice_loop, daemon=True, name="voice").start()
         threading.Thread(target=load_models, daemon=True, name="models").start()
+        threading.Thread(target=self._start_bridge, daemon=True, name="bridge-probe").start()
+
+    def _start_bridge(self) -> None:
+        """Optional Arduino switch interface (see arduino/README.md)."""
+        try:
+            from .bridge import SwitchBridge
+
+            def on_action(a: str) -> None:
+                if a == "voice_on":
+                    self.s.voice = True
+                    self.hud_state.voice_on = True
+                elif a == "voice_off":
+                    self.s.voice = False
+                    self.hud_state.voice_on = False
+                elif a == "toggle_head":
+                    self._cursor_action("pause" if self.cursor.st.enabled else "resume")
+                self.hud_state.action = "switch: " + a.replace("_", " ")
+
+            self.bridge = SwitchBridge(on_action, port=getattr(self.s, "bridge_port", None) or None)
+            if self.bridge.start():
+                log.info("bridge: connected on %s", self.bridge._ser.port)
+                self.hud_state.note = f"switch on {self.bridge._ser.port}"
+            else:
+                log.info("bridge: no Sahaay switch device found (optional)")
+        except Exception as exc:
+            log.warning("bridge unavailable: %s", exc)
         threading.Thread(target=self._announce_ready, daemon=True).start()
         self._start_hotkeys()
 

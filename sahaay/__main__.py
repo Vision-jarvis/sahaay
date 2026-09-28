@@ -12,6 +12,7 @@ def main() -> int:
     ap.add_argument("--no-voice", action="store_true", help="start with voice off")
     ap.add_argument("--lang", choices=["en", "hi"], help="speech recognition language hint")
     ap.add_argument("--no-hud", action="store_true")
+    ap.add_argument("--port", help="COM port of an Arduino switch interface (default: auto-detect)")
     args = ap.parse_args()
 
     from .app import Sahaay
@@ -28,6 +29,8 @@ def main() -> int:
         s.language = args.lang
     if args.no_hud:
         s.hud = False
+    if args.port:
+        s.bridge_port = args.port
     Sahaay(s).run()
     return 0
 

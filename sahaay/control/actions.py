@@ -114,6 +114,8 @@ class Executor:
                 return f"opened {name}" + (f" ({title})" if title else "")
             except OSError:
                 pass
+        if len(key) < 3 or not any(ch.isalpha() for ch in key):
+            return f"'{name}' is not an app I know"
         # fall back to Windows search: works for any installed app
         self.kb.press(Key.cmd)
         self.kb.release(Key.cmd)
