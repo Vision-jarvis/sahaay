@@ -13,6 +13,12 @@ import numpy as np
 
 class Camera:
     def __init__(self, index: int = 0, width: int = 1280, height: int = 720) -> None:
+        import comtypes
+
+        try:
+            comtypes.CoInitialize()  # DirectShow is COM; worker threads must initialise it
+        except OSError:
+            pass
         from pygrabber.dshow_graph import FilterGraph
 
         self._g = FilterGraph()

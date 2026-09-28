@@ -152,6 +152,12 @@ class Sahaay:
             cam.stop()
 
     def voice_loop(self) -> None:
+        import comtypes
+
+        try:
+            comtypes.CoInitialize()  # UI Automation and DirectShow are COM
+        except OSError:
+            pass
         try:
             self.asr = WhisperNPU(model_dir("whisper"))
             unit = "NPU" if self.asr.on_npu else "CPU"
@@ -220,11 +226,20 @@ class Sahaay:
             self.speaker = Speaker(model_dir("piper"))
         except Exception as exc:
             print("TTS unavailable:", exc)
-        self.brain = Brain(self.s.llm_model, preload=True)
+        # GenieX bundles must be loaded one at a time (concurrent loads fail to create HTP contexts),
+        # so the LLM loads first and the VLM follows on the same thread.
+        self.brain = Brain(self.s.llm_model, preload=False)
         if self.s.load_vlm:
-            self.describer = Describer(self.s.vlm_model, preload=True)
+            self.describer = Describer(self.s.vlm_model, preload=False)
+
+        def load_models() -> None:
+            self.brain._load()
+            if self.describer:
+                self.describer._load()
+
         threading.Thread(target=self.camera_loop, daemon=True, name="camera").start()
         threading.Thread(target=self.voice_loop, daemon=True, name="voice").start()
+        threading.Thread(target=load_models, daemon=True, name="models").start()
         threading.Thread(target=self._announce_ready, daemon=True).start()
         self._start_hotkeys()
 
