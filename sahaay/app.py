@@ -150,6 +150,7 @@ class Sahaay:
                     continue
                 self.latest_frame = frame
                 r = self.tracker.process(frame)
+                self.latest_face = r
                 self.hud_state.face_found = r.found
                 if self._calibrate_request.is_set():
                     self._calibrate_request.clear()
@@ -327,6 +328,10 @@ class Sahaay:
     def run(self) -> None:
         self.start()
         self.hud = Hud(self.hud_state, on_quit=self.quit)
+        if getattr(self.s, 'camera_preview', True):
+            from .ui.preview import CameraPreview
+
+            self.preview = CameraPreview(self.hud.root, lambda: (self.latest_frame, getattr(self, 'latest_face', None)))
         self.hud.set_visible(self.s.hud)
         import os
 

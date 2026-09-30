@@ -56,6 +56,7 @@ class Settings:
     vlm_model: str = "ai-hub-models/Qwen3-VL-4B-Instruct"
     load_vlm: bool = True
     hud: bool = True
+    camera_preview: bool = True    # corner window with the webcam and the live NPU face mesh
     bridge_port: str = ""          # COM port of an Arduino running arduino/sahaay_switch; empty = auto-detect
     hotkeys: dict = field(default_factory=lambda: {"toggle_head": "<ctrl>+<alt>+h", "toggle_voice": "<ctrl>+<alt>+v",
                                                    "calibrate": "<ctrl>+<alt>+c", "quit": "<ctrl>+<alt>+q"})
