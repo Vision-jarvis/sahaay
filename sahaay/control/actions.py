@@ -1,7 +1,9 @@
 """Action executor: carries out tool calls on Windows (CPU side of Sahaay)."""
 from __future__ import annotations
 
+import difflib
 import os
+import re
 import subprocess
 import time
 from typing import Callable
@@ -104,6 +106,13 @@ class Executor:
             if key.startswith(prefix):
                 key = key[len(prefix):]
         target = APP_ALIASES.get(key)
+        if target is None:
+            # speech recognition often mangles app names ('north back' for notepad): fuzzy-match known apps
+            squash = {re.sub(r'[^a-z]', '', k): k for k in APP_ALIASES}
+            m = difflib.get_close_matches(re.sub(r'[^a-z]', '', key), list(squash), n=1, cutoff=0.5)
+            if m:
+                key = name = squash[m[0]]
+                target = APP_ALIASES[key]
         if target is None and (key.startswith("http") or "." in key and " " not in key):
             target = key if key.startswith("http") else "https://" + key
         before = {w.NativeWindowHandle for w in self._top_windows()}
@@ -114,7 +123,8 @@ class Executor:
                 return f"opened {name}" + (f" ({title})" if title else "")
             except OSError:
                 pass
-        if len(key) < 3 or not any(ch.isalpha() for ch in key):
+        if len(key) < 3 or not any(ch.isalpha() for ch in key) or len(key.split()) > 2:
+            self.say(f"I don't know an app called {name}.")
             return f"'{name}' is not an app I know"
         # fall back to Windows search: works for any installed app
         self.kb.press(Key.cmd)

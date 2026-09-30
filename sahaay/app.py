@@ -11,6 +11,7 @@ Threads
 from __future__ import annotations
 
 import logging
+import re
 import threading
 import time
 import traceback
@@ -32,6 +33,7 @@ from .vision.describe import Describer
 from .vision.face import FaceTracker
 
 log = logging.getLogger("sahaay")
+NOISE = {"you", "thank you", "thanks", "bye", "okay", "ok", "hmm", "uh", "um", "so", "see ya", "blank audio"}
 
 
 def setup_logging() -> None:
@@ -211,8 +213,9 @@ class Sahaay:
             try:
                 t = self.asr.transcribe(audio, language=self.s.language or None)
                 self.hud_state.latencies["whisper"] = (t.encoder_ms + t.decoder_ms, unit)
-                text = t.text.strip()
-                if len(text) < 2:
+                # Whisper labels non-speech in brackets ([BLANK_AUDIO], (music)); drop those and filler
+                text = re.sub(r'[\[\(\*][^\]\)\*]*[\]\)\*]', '', t.text).strip(' .,!?-')
+                if len(text) < 3 or text.lower() in NOISE:
                     self.hud_state.status = "listening"
                     continue
                 self.hud_state.heard = text
@@ -231,7 +234,7 @@ class Sahaay:
                 try:
                     snap = scr.snapshot()
                     self.executor.last_snapshot = snap
-                    screen_text = snap.as_text(max_items=80)
+                    screen_text = snap.as_text(max_items=35, max_len=40)
                 except Exception:
                     screen_text = ""
             calls = self.brain.plan(text, screen_text)

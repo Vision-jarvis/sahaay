@@ -15,7 +15,7 @@ from PIL import Image, ImageDraw, ImageTk
 
 from ..control import win32
 
-W, H = 360, 270
+W, H = 560, 420
 GREEN = (61, 220, 151)
 SAFFRON = (232, 99, 43)
 
@@ -27,11 +27,11 @@ class CameraPreview:
         self.win.overrideredirect(True)
         self.win.attributes("-topmost", True)
         sw, sh = win32.screen_size()
-        self.win.geometry(f"{W}x{H + 30}+{sw - W - 24}+{sh - H - 30 - 72}")
+        self.win.geometry(f"{W}x{H + 40}+{sw - W - 24}+{sh - H - 40 - 72}")
         self.win.configure(bg="#101418")
         self.label = tk.Label(self.win, bg="#101418", bd=0)
         self.label.pack()
-        self.caption = tk.Label(self.win, text="", fg="#8A97A6", bg="#101418", font=("Segoe UI", 10), anchor="w")
+        self.caption = tk.Label(self.win, text="", fg="#8A97A6", bg="#101418", font=("Segoe UI Semibold", 14), anchor="w")
         self.caption.pack(fill="x", padx=8)
         for w in (self.win, self.label, self.caption):
             w.bind("<Button-1>", self._drag_start)
@@ -50,21 +50,31 @@ class CameraPreview:
             frame, face = self.source()
             if frame is not None:
                 fh, fw = frame.shape[:2]
-                img = Image.fromarray(frame).resize((W, int(W * fh / fw)), Image.BILINEAR)
-                sx, sy = W / fw, img.height / fh
+                # crop a window around the face (2.4x the face box) so the face fills the preview
+                tgt = (0.0, 0.0, float(fw), float(fh))
+                if face is not None and getattr(face, 'box', None):
+                    bx0, by0, bx1, by1 = face.box
+                    cx, cy = (bx0 + bx1) / 2, (by0 + by1) / 2
+                    ch = min(fh, max(200.0, (by1 - by0) * 1.9))
+                    cw = min(fw, ch * W / H)
+                    tgt = (min(max(cx - cw / 2, 0), fw - cw), min(max(cy - ch / 2, 0), fh - ch), cw, ch)
+                prev = getattr(self, '_crop', tgt)
+                self._crop = tuple(0.8 * a + 0.2 * b for a, b in zip(prev, tgt))
+                x0, y0, cw, ch = self._crop
+                img = Image.fromarray(frame).crop((int(x0), int(y0), int(x0 + cw), int(y0 + ch))).resize((W, H), Image.BILINEAR)
+                sx, sy = W / cw, H / ch
                 d = ImageDraw.Draw(img)
                 if face is not None and getattr(face, "found", False) and face.landmarks is not None:
-                    pts = face.landmarks[:, :2] * np.array([sx, sy])
-                    for x, y in pts[::2]:
-                        d.point((float(x), float(y)), fill=GREEN)
+                    pts = (face.landmarks[:, :2] - np.array([x0, y0])) * np.array([sx, sy])
+                    for x, y in pts:
+                        d.ellipse((float(x) - 1.2, float(y) - 1.2, float(x) + 1.2, float(y) + 1.2), fill=GREEN)
                     nose = pts[1]
-                    d.line([tuple(nose), (float(nose[0] + face.yaw * 60), float(nose[1] + face.pitch * 60))], fill=SAFFRON, width=3)
+                    d.line([tuple(map(float, nose)), (float(nose[0] + face.yaw * 120), float(nose[1] + face.pitch * 120))], fill=SAFFRON, width=5)
                     ms = face.detector_ms + face.landmark_ms
                     self.caption.config(text=f"face mesh on the Hexagon NPU · {ms:.1f} ms", fg="#3DDC97")
                 else:
                     self.caption.config(text="looking for a face ...", fg="#8A97A6")
                 img = img.transpose(Image.FLIP_LEFT_RIGHT)  # mirror, like a video call
-                img = img.crop((0, 0, W, min(H, img.height)))
                 self._img = ImageTk.PhotoImage(img)
                 self.label.config(image=self._img)
         except Exception:

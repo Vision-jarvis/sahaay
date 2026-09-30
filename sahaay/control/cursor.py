@@ -90,7 +90,7 @@ class HeadCursor:
         return math.copysign(self.cfg.gain * (m ** self.cfg.expo), v)
 
     def _move(self, dt: float) -> None:
-        vx = self._axis(self.st.yaw)
+        vx = -self._axis(self.st.yaw)  # camera image is mirrored relative to the user
         vy = self._axis(self.st.pitch) * (-1 if self.cfg.invert_y else 1)
         if vx == 0 and vy == 0:
             # keep our notion of position in sync if the user also has a mouse

@@ -17,7 +17,7 @@ BLOCK = 480  # 30 ms
 
 
 class Microphone:
-    def __init__(self, *, threshold: float = 0.012, silence_ms: int = 700, min_ms: int = 350,
+    def __init__(self, *, threshold: float = 0.02, silence_ms: int = 700, min_ms: int = 500,
                  max_s: float = 15.0, pre_roll_ms: int = 300, device: int | None = None) -> None:
         self.threshold = threshold
         self.silence_blocks = max(1, silence_ms // 30)
@@ -56,7 +56,7 @@ class Microphone:
             levels.append(self.level)
             time.sleep(0.03)
         noise = float(np.percentile(levels, 90)) if levels else 0.0
-        self.threshold = max(0.008, noise * 2.5)
+        self.threshold = max(0.02, noise * 3.0)
         return self.threshold
 
     def _cb(self, indata, frames, t, status) -> None:  # sounddevice thread

@@ -109,6 +109,13 @@ _rule(r"^(sahaay[, ]+)?(close (this|the) window|close window)\.?$", lambda m: [T
 _rule(r"^(sahaay[, ]+)?(show (the )?desktop|minimize everything)\.?$", lambda m: [ToolCall("press_keys", {"keys": "win+d"})])
 
 
+def gen_text(out) -> str:
+    """GenieX returns a GenerateOutput object; take its text."""
+    if isinstance(out, str):
+        return out
+    return str(getattr(out, "text", out))
+
+
 def fast_parse(text: str) -> list[ToolCall] | None:
     t = text.strip().strip(".!?").strip()
     for pat, make in _FAST:
@@ -153,6 +160,7 @@ class Brain:
         if not self.ready.wait(timeout):
             return [ToolCall("say", {"text": "I am still loading my language model, one moment."}, source="fallback")]
         user = utterance.strip()
+        screen_text = screen_text[:1800]
         if screen_text:
             user = f"Screen:\n{screen_text}\n\nUser said: {utterance.strip()}"
         msgs = [{"role": "system", "content": SYSTEM_PROMPT}, {"role": "user", "content": user}]
@@ -160,12 +168,26 @@ class Brain:
             llm = self._llm
             prompt = llm.tokenizer.apply_chat_template(msgs, add_generation_prompt=True)
             t0 = time.perf_counter()
-            out = llm.generate(prompt, max_new_tokens=200, temperature=0.0, stop=["]\n", "\n\n"])
+            try:
+                out = llm.generate(prompt, max_new_tokens=200, temperature=0.0, stop=["]\n", "\n\n"])
+            except Exception:
+                # prompt too long (or a stale context): reset and retry without the screen list
+                try:
+                    llm.reset()
+                except Exception:
+                    pass
+                msgs = [{"role": "system", "content": SYSTEM_PROMPT}, {"role": "user", "content": utterance.strip()}]
+                out = llm.generate(llm.tokenizer.apply_chat_template(msgs, add_generation_prompt=True),
+                                   max_new_tokens=200, temperature=0.0)
+            try:
+                llm.reset()  # each command is independent; never accumulate context
+            except Exception:
+                pass
             self.last_ms = (time.perf_counter() - t0) * 1000
-        text = out if isinstance(out, str) else str(out)
+        text = gen_text(out)
         calls = parse_tool_calls(text)
         if not calls:
-            calls = [ToolCall("say", {"text": text.strip()[:200] or "Sorry, I did not understand that."}, source="fallback")]
+            calls = [ToolCall("say", {"text": "Sorry, I did not catch that."}, source="fallback")]
         return calls
 
     def close(self) -> None:
@@ -220,11 +242,18 @@ SUMMARY_PROMPT = ("Summarise this screen for a blind user in two short spoken se
 def summarise_screen(brain: "Brain", screen_text: str, timeout: float = 30.0) -> str:
     if not brain.ready.wait(timeout):
         return ""
-    msgs = [{"role": "system", "content": SUMMARY_PROMPT}, {"role": "user", "content": screen_text[:6000]}]
+    msgs = [{"role": "system", "content": SUMMARY_PROMPT}, {"role": "user", "content": screen_text[:2500]}]
     with brain._lock:
         llm = brain._llm
         prompt = llm.tokenizer.apply_chat_template(msgs, add_generation_prompt=True)
         t0 = time.perf_counter()
-        out = llm.generate(prompt, max_new_tokens=90, temperature=0.0)
+        try:
+            out = llm.generate(prompt, max_new_tokens=90, temperature=0.0)
+        except Exception:
+            out = ""
+        try:
+            llm.reset()
+        except Exception:
+            pass
         brain.last_ms = (time.perf_counter() - t0) * 1000
-    return (out if isinstance(out, str) else str(out)).strip()
+        return gen_text(out).strip()

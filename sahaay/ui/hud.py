@@ -45,14 +45,14 @@ class Hud:
         self.panel.attributes("-topmost", True)
         self.panel.attributes("-alpha", 0.92)
         self.panel.configure(bg=BG)
-        w, h = 380, 176
+        w, h = 560, 270
         sw, _ = win32.screen_size()
         self.panel.geometry(f"{w}x{h}+{sw - w - 16}+16")
-        f = ("Segoe UI", 10)
-        fb = ("Segoe UI Semibold", 11)
+        f = ("Segoe UI", 15)
+        fb = ("Segoe UI Semibold", 16)
         top = tk.Frame(self.panel, bg=BG)
         top.pack(fill="x", padx=10, pady=(8, 2))
-        self.l_title = tk.Label(top, text="Sahaay", fg=ACCENT, bg=BG, font=("Segoe UI Semibold", 13))
+        self.l_title = tk.Label(top, text="Sahaay", fg=ACCENT, bg=BG, font=("Segoe UI Semibold", 20))
         self.l_title.pack(side="left")
         self.l_status = tk.Label(top, text="", fg=FG, bg=BG, font=fb)
         self.l_status.pack(side="right")
@@ -62,7 +62,7 @@ class Hud:
         self.l_heard.pack(fill="x", padx=10, pady=(4, 0))
         self.l_action = tk.Label(self.panel, text="", fg=DIM, bg=BG, font=f, anchor="w", wraplength=w - 20, justify="left")
         self.l_action.pack(fill="x", padx=10)
-        self.l_lat = tk.Label(self.panel, text="", fg=DIM, bg=BG, font=("Consolas", 9), anchor="w", justify="left")
+        self.l_lat = tk.Label(self.panel, text="", fg=DIM, bg=BG, font=("Consolas", 13), anchor="w", justify="left")
         self.l_lat.pack(fill="x", padx=10, pady=(4, 6))
         self.panel.bind("<Button-1>", self._drag_start)
         self.panel.bind("<B1-Motion>", self._drag)
@@ -71,7 +71,7 @@ class Hud:
         self.ring.overrideredirect(True)
         self.ring.attributes("-topmost", True)
         self.ring.attributes("-transparentcolor", KEY)
-        self.ring_size = 44
+        self.ring_size = 72
         self.ring.geometry(f"{self.ring_size}x{self.ring_size}+0+0")
         self.canvas = tk.Canvas(self.ring, width=self.ring_size, height=self.ring_size, bg=KEY, highlightthickness=0)
         self.canvas.pack()
@@ -108,7 +108,7 @@ class Hud:
             self.ring.geometry(f"{r}x{r}+{x - r // 2}+{y - r // 2}")
             self.canvas.delete("all")
             if s.head_on and s.dwell > 0.05:
-                self.canvas.create_arc(4, 4, r - 4, r - 4, start=90, extent=-360 * s.dwell, style="arc", outline=ACCENT, width=3)
+                self.canvas.create_arc(4, 4, r - 4, r - 4, start=90, extent=-360 * s.dwell, style="arc", outline=ACCENT, width=6)
             elif s.head_on and s.face_found:
                 self.canvas.create_oval(r // 2 - 3, r // 2 - 3, r // 2 + 3, r // 2 + 3, outline=ACCENT, width=1)
         except Exception:
