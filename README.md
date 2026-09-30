@@ -1,202 +1,184 @@
-# Sahaay (सहाय)
+<p align="center">
+  <img src="docs/media/readme_banner.png" alt="Sahaay: hands-free and eyes-free Windows, entirely on the Snapdragon Hexagon NPU" width="100%">
+</p>
 
-**Your PC, hands-free and eyes-free. Six AI models, all on the Hexagon NPU, nothing leaves the laptop.**
+<p align="center">
+  <img alt="Snapdragon X and X2" src="https://img.shields.io/badge/Snapdragon-X%20%7C%20X2-3253DC?style=flat-square">
+  <img alt="Runs on Hexagon NPU" src="https://img.shields.io/badge/runs%20on-Hexagon%20NPU-0E7C6B?style=flat-square">
+  <img alt="Qualcomm AI Hub" src="https://img.shields.io/badge/models-Qualcomm%20AI%20Hub-E8632B?style=flat-square">
+  <img alt="Offline" src="https://img.shields.io/badge/network-none%20at%20runtime-14181C?style=flat-square">
+  <img alt="Windows 11 ARM64" src="https://img.shields.io/badge/Windows%2011-ARM64-0078D4?style=flat-square">
+  <img alt="Languages" src="https://img.shields.io/badge/speech-English%20%2B%20Hindi-8A97A6?style=flat-square">
+  <img alt="MIT" src="https://img.shields.io/badge/license-MIT-lightgrey?style=flat-square">
+</p>
 
-Sahaay is an offline accessibility copilot for Snapdragon-powered Windows PCs such as the HP OmniBook and EliteBook. It gives people who cannot use a mouse or keyboard full control of Windows with their head and voice, and gives people who cannot see the screen a conversational narrator that reads, summarises and describes anything on it. Every neural network runs on the Qualcomm Hexagon NPU through Qualcomm AI Hub models, ONNX Runtime QNN and GenieX. The CPU only moves the mouse.
+<p align="center">
+  <b>Sahaay</b> (सहाय, "assistance") lets people who cannot use a mouse or keyboard control Windows with their head and voice,<br>
+  and lets people who cannot see the screen ask it what it says. Six AI models, all on the NPU of a Snapdragon HP PC. Nothing leaves the laptop.
+</p>
 
-Built by Ruhan Srivastava for the Snapdragon AI Lab Build & Present Challenge 2026.
+<p align="center">
+  <a href="#-see-it">See it</a> ·
+  <a href="#-how-it-works">How it works</a> ·
+  <a href="#-measured-on-the-npu">Benchmarks</a> ·
+  <a href="#-install">Install</a> ·
+  <a href="#-engineering-challenges">Challenges</a> ·
+  <a href="docs/deck/Sahaay_Pitch.pdf">Pitch deck (PDF)</a>
+</p>
 
-> **TLDR**
-> - Head pose from a 468-point face mesh drives the cursor; blinks, dwell and mouth gestures click and drag. Whisper turns speech into dictation and commands. Qwen3-4B turns free speech into Windows actions. Qwen3-VL describes the screen and the webcam. Piper speaks back in English and Hindi.
-> - All of it runs on the NPU at the same time: face tracking in 2.7 ms per frame, a spoken command transcribed in under 100 ms, language model at 31 tokens per second, vision-language model at 25 tokens per second, on this machine. Measured, not estimated: see `benchmarks/`.
-> - Runs on the 45 TOPS OmniBook a judge owns (hands-free mode within 16 GB, both generative models on 32 GB), and a 60,000 rupee laptop becomes an assistive device that otherwise costs over 1.5 lakh and needs the cloud.
+<img src="docs/media/readme_stats.png" alt="2.7 ms face tracking, 79 ms speech, 31 tok/s language model, 25 tok/s vision model, 0 network calls" width="100%">
 
-## Demo
+Built by **Ruhan Srivastava** (IIT Kharagpur) for the **Snapdragon AI Lab Build & Present Challenge 2026**.
 
-| Hands-free mode | Narrator mode |
+---
+
+## 🎬 See it
+
+<!-- DEMO:START (replaced with recorded GIFs by tools/record_demo.py output) -->
+<img src="docs/media/readme_storyboard.png" alt="One spoken command, end to end" width="100%">
+
+<p align="center"><i>One spoken command, end to end: heard by Whisper, planned by Qwen3-4B against the live UI Automation tree, validated, executed, confirmed by voice.</i></p>
+<!-- DEMO:END -->
+
+| 🖐️ Hands-free mode | 👁️ Narrator mode |
 |---|---|
-| ![hands-free demo](docs/media/demo_handsfree.gif) | ![narrator demo](docs/media/demo_narrator.gif) |
-| Head moves the cursor, a blink clicks, "open notepad and type a thank-you note" does the rest | "What's on my screen?", "read this", "describe the picture", "what do you see?" |
+| **Head cursor:** nudge your head, the cursor moves; hold still, it stays | **"What's on my screen?"** Two spoken sentences: app, content, what matters |
+| **Clicks without hands:** blink, dwell ring, open mouth to drag | **"Read this."** The focused paragraph or field, aloud |
+| **Dictation** into any app, English and Hindi | **"Describe the picture."** Qwen3-VL explains photos, charts, canvases |
+| **25 instant commands** in under 1 ms: click, scroll, press ctrl+s, next window | **"What do you see?"** The webcam view, labels, signs |
+| **Free-form:** *"open my downloads and sort by date"* | **Every action confirmed by voice**, so a blind user always knows |
+| **Arduino switches** for people who cannot use the camera | English and Hindi voices, generated on the laptop |
 
-## Why this has to run on the device
+---
 
-| Need | Cloud assistant | Sahaay on the NPU |
-|---|---|---|
-| A camera watching your face all day, a screen showing your bank statement | Uploaded frame by frame | Never leaves RAM |
-| Cursor latency people can tolerate | 100 ms or more, network dependent | Under 1 ms per frame, 28 fps |
-| Works in a hostel, a hospital, a train, a village with patchy 4G | No | Yes, fully offline after install |
-| Battery on a laptop that is the user's only interface | CPU or GPU inference drains it | NPU runs the whole stack at a few watts |
-| Cost to the user | Subscription, per-minute speech APIs | Zero, forever |
+## 🧠 How it works
 
-Qualcomm India has said the goal is Snapdragon PCs below 60,000 rupees for students; HP India positions the OmniBook 3 and 5 at exactly that audience. India has 2.68 crore people with disabilities (Census 2011), roughly a fifth with movement disabilities and a fifth with visual disabilities. A free download that makes that laptop usable without hands or eyes is the point of an NPU.
-
-## What Sahaay does
-
-**Hands-free mode (motor impairment: spinal injury, ALS, cerebral palsy, RSI, a broken arm)**
-
-- Joystick-style head cursor: nudge your head past a small dead zone and the cursor moves with speed proportional to the angle, so a comfortable neutral pose is still. Exponential smoothing kills jitter. Auto-calibrates in the first second, recalibrates on request.
-- Clicks without hands: dwell (hold still for 0.9 s, a ring shows progress), short blink = left click, long blink = right click, open your mouth for a moment = start or stop dragging.
-- Dictation into any application, English and Hindi.
-- 25 instant voice commands (click, right click, scroll down a lot, press ctrl s, open Chrome, next window, close window, select all, copy, paste, undo, pause, resume, calibrate, ...) matched in under a millisecond without the language model.
-- Free-form commands through the language model: "open my downloads", "write a short thank-you note to my teacher and save the file", "click the sign in button", "close this without saving". The model sees a compact list of the on-screen controls from Windows UI Automation and returns strictly validated JSON tool calls.
-- Optional physical switch access through an Arduino (see below) for people who cannot use the camera.
-
-**Narrator mode (low vision, blindness)**
-
-- "What's on my screen": the UI Automation tree is summarised by the language model into two spoken sentences: which app, what content, which buttons matter.
-- "Read this": reads the focused element or paragraph.
-- "Describe the screen" or "describe the picture": the vision-language model describes what accessibility trees cannot: images, charts, photos, canvases, games.
-- "What do you see": describes the webcam view, reads labels and signs.
-- Every hands-free action is confirmed by voice, so a blind user always knows what just happened.
-- Global hotkeys (Ctrl+Alt+H head, Ctrl+Alt+V voice, Ctrl+Alt+C calibrate, Ctrl+Alt+Q quit), a tray icon and a small heads-up panel that shows what Sahaay heard, what it did, and the live latency of each model with the compute unit that ran it.
-
-## Overview: how it works
-
-```
- webcam ─► Face detector + 468-pt mesh (NPU) ─► head pose, blink, mouth ─► cursor, clicks, drag (CPU, Win32)
-                                                                          
- mic ─► voice activity detection (CPU) ─► Whisper base (NPU) ─► text ─┬─► fast grammar (CPU, <1 ms) ──┐
-                                                                     └─► Qwen3-4B tool planner (NPU) ─┤
-                                                                                                      ▼
- screen ─► UI Automation tree (CPU) ─────────────────────────────────────────────► action executor (CPU)
-        └► screenshot ─► Qwen3-VL-4B (NPU) ─► description                         click, type, keys, open,
- webcam frame ─────────► Qwen3-VL-4B (NPU) ─► description                         focus, scroll, read
-                                                                                          │
- speaker ◄── Piper TTS en / hi ◄──────────────────────────────────────────────────────────┘
- Arduino switches ─► JSON over USB serial ─► clicks, push-to-talk, pause (optional)
+```mermaid
+flowchart LR
+  subgraph S["Senses · CPU"]
+    CAM["📷 Webcam<br/>720p · 28 fps"]
+    MIC["🎙️ Microphone<br/>VAD"]
+    SCR["🖥️ Screen<br/>UI Automation + screenshot"]
+  end
+  subgraph N["Hexagon NPU"]
+    FACE["Face detector +<br/>468-pt mesh · 2.7 ms"]
+    WH["Whisper base<br/>79 ms / command"]
+    LLM["Qwen3-4B<br/>31 tok/s"]
+    VLM["Qwen3-VL-4B<br/>25 tok/s"]
+  end
+  subgraph A["Acts · CPU"]
+    CUR["Head cursor<br/>dwell · blink · drag"]
+    GR["Fast grammar<br/>< 1 ms"]
+    EX["Validator +<br/>executor"]
+    TTS["Piper TTS<br/>en / hi"]
+  end
+  CAM --> FACE --> CUR
+  MIC --> WH --> GR --> EX
+  WH --> LLM --> EX
+  SCR --> LLM
+  SCR --> VLM --> TTS
+  EX --> WIN["🪟 Any Windows app"]
+  EX --> TTS --> SPK["🔊 Spoken confirmation"]
+  style N fill:#E6F2EF,stroke:#0E7C6B
 ```
 
-Two-tier command handling keeps the app feeling instant. Common commands never touch the language model. Anything else goes to Qwen3-4B with the screen's control list as context and a fixed tool schema; every returned call is validated against the schema and an allow-list before it runs.
+<img src="docs/media/readme_architecture.png" alt="Architecture: six models on the Hexagon NPU, CPU for capture and actions" width="100%">
 
-## Software and hardware
+<details>
+<summary><b>Models and runtimes</b></summary>
 
-**Languages:** Python 3.12 (ARM64 native), a little Arduino C++.
+| Job | Model | Source | Runtime | Unit |
+|---|---|---|---|---|
+| Face detection | BlazeFace (`mediapipe_face`) | Qualcomm AI Hub | ONNX Runtime + QNN EP | NPU |
+| 468-pt mesh, pose, blink, mouth | `mediapipe_face` landmarks | Qualcomm AI Hub | ONNX Runtime + QNN EP | NPU |
+| Speech to text, en + hi | `whisper_base`, precompiled QNN | Qualcomm AI Hub | ONNX Runtime + QNN EP | NPU |
+| Commands and screen summaries | `qwen3_4b_instruct_2507` | Qualcomm AI Hub bundle | GenieX (QAIRT) | NPU |
+| Screen and camera description | `qwen3_vl_4b_instruct` | Qualcomm AI Hub bundle | GenieX (QAIRT) | NPU |
+| Text to speech | Piper `en_US-lessac`, `hi_IN-pratham` | rhasspy/piper-voices | ONNX Runtime | CPU |
 
-**Frameworks and tools**
-- ONNX Runtime 1.30 with the Qualcomm QNN execution provider (`onnxruntime-qnn` 2.6, HTP backend) for the face, speech and TTS graphs
-- Qualcomm GenieX 0.7 (QAIRT runtime) for the language and vision-language models
-- Qualcomm AI Hub (`qai_hub`, `qai_hub_models` 0.63) to compile and profile every ONNX model for Snapdragon X Elite and X2 Elite
-- Windows UI Automation (`uiautomation`), Win32 `SendInput` via ctypes, `pynput` for hotkeys and keys, DirectShow via `pygrabber` for the camera (OpenCV has no Windows ARM64 wheel), `sounddevice` for audio, Tkinter for the overlay, `pystray` for the tray
-- espeak-ng for phonemisation, Hugging Face `transformers` for the Whisper tokenizer and mel features (CPU)
+Every ONNX model was compiled and profiled for **Snapdragon X2 Elite** and **Snapdragon X Elite** (the HP OmniBook chip) on Qualcomm AI Hub; the installer picks the matching pack. Common commands never touch the language model; everything else goes to Qwen3-4B with the live control list and a fixed JSON tool schema, and every returned call is checked against an allow-list before it runs.
+</details>
 
-**AI runtime:** Qualcomm AI Engine Direct (QNN HTP) underneath both ONNX Runtime QNN EP and GenieX.
+---
 
-**Hardware used for development:** ASUS Zenbook A16, Snapdragon X2 Elite Extreme (18 cores, Hexagon NPU, 48 GB). Target hardware: any Snapdragon X, X Plus, X Elite, X2 Plus or X2 Elite PC including the HP OmniBook X, OmniBook 5, OmniBook 3, OmniBook Ultra and EliteBook Ultra. Optional: Arduino UNO Q or any Arduino for switch access.
+## 📊 Measured on the NPU
 
-## Models implemented
+<img src="docs/media/readme_benchmarks.png" alt="CPU vs NPU latency, speech and generative model throughput" width="100%">
 
-| Job | Model | Source | Precision | Runtime | Where it runs |
-|---|---|---|---|---|---|
-| Face detection | BlazeFace (`mediapipe_face` detector) | Qualcomm AI Hub | fp16 on HTP | ONNX Runtime QNN EP | NPU |
-| 468-point face mesh, head pose, blink, mouth | `mediapipe_face` landmark detector | Qualcomm AI Hub | fp16 on HTP | ONNX Runtime QNN EP | NPU |
-| Speech to text (English, Hindi) | `whisper_base` encoder + KV-cache decoder | Qualcomm AI Hub, precompiled QNN ONNX | fp16 | ONNX Runtime QNN EP | NPU |
-| Intent to tool calls, screen summaries | `qwen3_4b_instruct_2507` | Qualcomm AI Hub NPU bundle via GenieX | 4-bit weights | GenieX (QAIRT) | NPU |
-| Screen and camera description | `qwen3_vl_4b_instruct` | Qualcomm AI Hub NPU bundle via GenieX | 4-bit weights | GenieX (QAIRT) | NPU |
-| Text to speech | Piper `en_US-lessac-medium`, `hi_IN-pratham-medium` | rhasspy/piper-voices | fp32 | ONNX Runtime | CPU (see notes) |
-
-No fine-tuning was needed. The face and Whisper models were exported with `qai-hub-models ... export` for both `Snapdragon X2 Elite CRD` (this laptop, Hexagon v81) and `Snapdragon X Elite CRD` (the OmniBook chip, Hexagon v73); the installer picks the right set. The language models are Qualcomm's own NPU bundles pulled with `geniex-py pull ai-hub-models/...`.
-
-Notes: the Piper VITS graph has dynamic shapes that the QNN compiler rejects, so it runs on the CPU today (167 ms for 4 s of audio, 23x real time); Qualcomm AI Hub lists a `pipertts_en` recipe that is the NPU path for the next version. Whisper mel features and tokenisation are CPU by design.
-
-## Compute cores used
-
-- **NPU (Hexagon):** face detector, face mesh, Whisper encoder and decoder, Qwen3-4B, Qwen3-VL-4B. Everything that is a neural network.
-- **CPU (Oryon):** camera capture, voice activity detection, mel spectrogram, UI Automation tree walking, the command grammar, JSON validation, cursor maths and `SendInput`, the overlay, Piper TTS.
-- **GPU (Adreno):** deliberately nothing. The user's own applications keep the GPU.
-
-The concurrency matters: while the language model is planning an action and the vision model is describing the screen, the face mesh keeps the cursor alive at 28 fps and Whisper keeps listening, all on the same NPU. This is what an 80 TOPS X2 was announced for, and the whole stack still fits a 45 TOPS first-generation OmniBook.
-
-## Performance
-
-Measured on the development machine with `tools/bench_all.py` (full tables and raw JSON in `benchmarks/`). The NPU column is only reported when ONNX Runtime confirms `QNNExecutionProvider` is the active provider; `tools/npu_check.py` prints that proof and is the first thing a reviewer should run.
-
-| Stage | CPU | NPU | Note |
+| Stage | CPU | NPU | |
 |---|---:|---:|---|
-| Face detector (256x256) | 2.75 ms | 0.43 ms | 6.4x |
-| Face mesh (192x192) | 0.87 ms | 0.16 ms | 5.3x |
-| Full face pipeline on a live 1280x720 frame (detect, crop, mesh, pose) | 25.3 ms | 2.7 ms | 364 fps possible, the webcam delivers 28 |
-| Whisper base encoder (30 s window) | n/a, precompiled QNN context | 21.5 ms | |
-| Whisper base decoder | n/a | 2.7 ms/token | a 5.6 s command in 79 ms end to end |
-| Qwen3-4B-Instruct (GenieX), screen context + command | | 243 ms to first token, 30.9 tok/s | 10 s to load |
-| Qwen3-VL-4B-Instruct (GenieX), screen description | | 269 ms to first token, 25.3 tok/s | 10 s to load |
-| Piper TTS, 4 s of speech | 167 ms | | 23x real time |
+| Face pipeline, live 720p frame | 25.3 ms | **2.7 ms** | 9× |
+| Face detector | 2.75 ms | **0.43 ms** | 6.4× |
+| Face mesh | 0.87 ms | **0.16 ms** | 5.3× |
+| Whisper, 5.6 s command | n/a (QNN context) | **79 ms** | |
+| Qwen3-4B | | **243 ms** first token · **31 tok/s** | |
+| Qwen3-VL-4B | | **269 ms** first token · **25 tok/s** | |
 
-Qualcomm AI Hub profiling on the reference devices (cloud device farm, every op on the NPU, job links in `benchmarks/aihub_profiles.md`):
+Qualcomm AI Hub, every op on the NPU: X Elite face 0.7 ms, mesh 0.3 ms, Whisper encoder 45.4 ms, decoder 3.7 ms/token. Full tables and job links: [`benchmarks/results.md`](benchmarks/results.md), [`benchmarks/aihub_profiles.md`](benchmarks/aihub_profiles.md).
 
-| Model | Snapdragon X2 Elite CRD | Snapdragon X Elite CRD (HP OmniBook X, EliteBook) |
-|---|---:|---:|
-| Face detector | 0.4 ms | 0.7 ms |
-| Face mesh | 0.2 ms | 0.3 ms |
-| Whisper base encoder | 21.5 ms | 45.4 ms |
-| Whisper base decoder, per token | 2.4 ms | 3.7 ms |
+> [!IMPORTANT]
+> With today's plugin runtime, `providers=["QNNExecutionProvider"]` is silently ignored and inference runs on the CPU. Sahaay registers the QNN plugin, selects the NPU device explicitly and asserts it. Check it yourself: `py -3.12 tools/npu_check.py`.
 
-On a judge's OmniBook that is about 1 ms per frame for face tracking and about 120 ms to transcribe a six-second command.
+---
 
-Memory, measured as process RSS growth: the language model adds 5.4 GB and the vision-language model 6.1 GB. On a 32 GB OmniBook X or Ultra both load together. On a 16 GB OmniBook 3 or 5 run with `--no-vlm` (hands-free mode plus UI-Automation narration, about 6 GB total), or swap in the 2B vision model (`qwen3_vl_2b_instruct` on AI Hub) via `settings.json`.
+## ☁️ Why on-device
 
-## Deployment
+<img src="docs/media/readme_cloud_vs_npu.png" alt="Cloud assistant versus Sahaay on the Hexagon NPU" width="100%">
 
-**Install (one time, needs internet):**
+---
+
+## 🚀 Install
 
 ```powershell
 git clone https://github.com/Vision-jarvis/sahaay.git
 cd sahaay
-powershell -ExecutionPolicy Bypass -File install.ps1
+powershell -ExecutionPolicy Bypass -File install.ps1   # one time, ~6 GB of models
+run.bat                                                 # fully offline from here
 ```
 
-`install.ps1` installs ARM64 Python 3.12 if missing, creates a virtual environment, installs the requirements, downloads the models for your chipset (about 6 GB, one time), installs espeak-ng, and adds a Start Menu shortcut. Everything after that is offline.
+| | Hands-free mode | Everything (+ vision model) |
+|---|---|---|
+| **RAM** | 16 GB (OmniBook 3, 5) | 32 GB (OmniBook X, Ultra) or `--no-vlm` / 2B vision model on 16 GB |
+| **NPU** | 45 TOPS (Snapdragon X, X Plus, X Elite) | 80 TOPS on X2 gives headroom |
 
-**Run:** `run.bat`, or the Start Menu shortcut. Options: `--no-vlm` (skip the vision model on 16 GB machines that need the RAM), `--lang hi`, `--no-head`, `--no-voice`, `--port COM5` for an Arduino switch.
+Options: `--lang hi`, `--no-vlm`, `--no-head`, `--no-voice`, `--port COM5` (Arduino switch). Hotkeys: <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>H</kbd> head, <kbd>V</kbd> voice, <kbd>C</kbd> calibrate, <kbd>Q</kbd> quit.
 
-**Requirements:** Windows 11 on Snapdragon (X, X Plus, X Elite, X2). 16 GB RAM for hands-free mode, 32 GB to keep both generative models resident (see Performance for the 16 GB options). Webcam and microphone. No admin rights, no cloud account.
+---
 
-**Verify the NPU:** `py -3.12 tools/npu_check.py` prints the execution providers and a CPU versus NPU timing for every ONNX model; `py -3.12 tools/bench_all.py` regenerates `benchmarks/results.md`.
+## 🛠️ Engineering challenges
 
-## Development flow
+<img src="docs/media/readme_challenges.png" alt="Seven engineering problems and their fixes" width="100%">
 
-1. Toolchain proof: ONNX Runtime QNN on ARM64 Python, AI Hub account, GenieX and Foundry Local installed, one conv net timed CPU vs NPU. Found that the common `providers=["QNNExecutionProvider"]` call silently runs on the CPU with the current plugin runtime; wrote `sahaay/npu.py` to register the plugin, select the NPU device explicitly and assert the active provider.
-2. Face tracking: exported `mediapipe_face` for X2 Elite, re-implemented Qualcomm's MediaPipe pre- and post-processing in numpy and Pillow (no OpenCV on ARM64), added head pose, eye aspect ratio and mouth metrics. 28 fps live.
-3. Head cursor: joystick mapping, dead zone, exponential gain, dwell ring, blink and mouth gestures, calibration.
-4. Speech: exported `whisper_base` as precompiled QNN ONNX, wrote the KV-cache decode loop in numpy, energy VAD on the mic.
-5. Brain: two-tier command handling; GenieX Qwen3-4B with a strict tool schema and a UI Automation screen snapshot; argument normalisation and an allow-list.
-6. Narrator: screen summaries, focused text, Qwen3-VL screen and camera descriptions, Piper TTS in English and Hindi via espeak-ng.
-7. App: threads for camera, voice, model loading; overlay, tray, hotkeys, logging; sequential GenieX loads (concurrent loads fail to create HTP contexts).
-8. Deployment: installer, first-run model fetcher with chipset detection, benchmark suite, Arduino bridge, this README, deck.
+---
 
-## Easy parts and hard parts
+## 🔌 Sahaay Bridge: switch access with an Arduino
 
-Easy: Qualcomm AI Hub. Every model exported and profiled on a real Snapdragon X2 Elite and X Elite in minutes, with per-op compute-unit reports. GenieX made the language and vision models a `pip install` and one `pull`; both ran on the NPU first try at 30+ tokens per second.
+For people who cannot use a camera, any Arduino (including the UNO Q from the Snapdragon AI Lab kit) becomes a one- or two-button interface over USB serial: tap to click, hold to drag, push-to-talk, pause. Five-line JSON protocol, auto-detected, testable in the Wokwi simulator. See [`arduino/`](arduino/).
 
-Hard: the plumbing around the models on Windows ARM64. OpenCV has no wheel, so the camera goes through DirectShow COM and every worker thread must call `CoInitialize`. The Piper wheel's espeak bridge is not built for ARM64, so phonemisation shells out to espeak-ng and the VITS graph is driven directly through ONNX Runtime. QNN context caching must reuse the cached file on the second launch rather than regenerate it. Two GenieX models cannot be loaded at the same moment. The QNN provider must be selected through the new device API or ONNX Runtime quietly falls back to the CPU, which is probably why so many "NPU" projects report CPU numbers.
+---
 
-## Sahaay Bridge: switch access with an Arduino
+## 🗺️ Roadmap
 
-Snapdragon AI Lab pairs the PC with the Arduino UNO Q. For accessibility the meaningful pairing is switch access: one or two big buttons, or a sip-and-puff sensor, for people who cannot use a camera. `arduino/sahaay_switch` turns any Arduino into a Sahaay switch interface over USB serial with a five-line JSON protocol (tap = click, hold = drag, push-to-talk, pause). It is auto-detected at startup and can be tried without hardware in the Wokwi simulator. Details in `arduino/README.md`.
+- [ ] Gaze estimation on the NPU (AI Hub `eyegaze`) for users with very limited neck movement
+- [ ] Piper on the NPU; Hindi and Hinglish command grammar ("neeche scroll karo")
+- [ ] Element grounding from the vision model for apps without an accessibility tree
+- [ ] Trials with an assistive-technology centre; tremor calibration profiles
+- [ ] MSIX package; OmniBook presence-sensor auto-pause
 
-## Privacy and safety
-
-No network calls at runtime. Frames, audio and screenshots are processed in memory and discarded. Language-model actions are validated against a fixed schema and an allow-list; the model cannot invent tools or click elements that are not on screen. Destructive shortcuts (close window, delete) only run from explicit fast-grammar commands, and every action is announced by voice.
-
-## Roadmap
-
-Gaze estimation (`eyegaze` on AI Hub) for coarse screen-region selection, Piper on the NPU, Hindi and Hinglish command grammar, element grounding from the vision model ("click the blue button"), OmniBook presence-sensor auto-pause, an MSIX package.
-
-## Repository layout
+<details>
+<summary><b>Repository layout</b></summary>
 
 ```
-sahaay/            the app: npu.py (QNN session factory), brain.py, screen.py, tts.py, app.py
-  vision/          camera.py, face.py (NPU face mesh), describe.py (NPU VLM)
-  speech/          whisper.py (NPU ASR), mic.py (VAD)
-  control/         cursor.py (head cursor), actions.py (executor), win32.py
-  ui/              hud.py, tray.py
-  bridge.py        Arduino switch protocol
-tools/             npu_check.py, bench_all.py, get_models.py, face_demo.py, asr_demo.py, head_mouse.py
-benchmarks/        measured results (json + md)
-arduino/           sahaay_switch sketch and protocol
-docs/              media, pitch deck, project description
-install.ps1, run.bat, requirements.txt
+sahaay/            npu.py (QNN session factory) · brain.py · screen.py · tts.py · app.py · bridge.py
+  vision/          camera.py · face.py (NPU face mesh) · describe.py (NPU VLM)
+  speech/          whisper.py (NPU ASR) · mic.py (VAD)
+  control/         cursor.py · actions.py · win32.py
+  ui/              hud.py · tray.py
+tools/             npu_check.py · bench_all.py · get_models.py · record_demo.py · face_demo.py · asr_demo.py
+benchmarks/        measured results + AI Hub profile jobs
+docs/              deck (HTML → PPTX/PDF), description, README infographics, media
+arduino/           switch sketch + protocol
 ```
+</details>
 
-## License and acknowledgements
-
-MIT. Models: Qualcomm AI Hub (MediaPipe Face, Whisper, Qwen3 bundles, under their respective licenses), rhasspy Piper voices (MIT), espeak-ng (GPL, used as a separate executable). Thanks to the Qualcomm AI Hub and GenieX teams for making the Hexagon NPU reachable from Python.
+**Privacy.** No network calls at runtime. Frames, audio and screenshots are processed in memory and discarded. **License** MIT. Models under their respective licenses (Qualcomm AI Hub, rhasspy Piper voices; espeak-ng used as a separate executable). Demo photo: India Gate, Wikimedia Commons, Free Art License.

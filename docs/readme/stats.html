@@ -1,0 +1,19 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><link rel="stylesheet" href="../deck/src/deck.css">
+<style>
+  html, body { width: 1600px; height: 290px; overflow: hidden; }
+  body { background: var(--paper); }
+  .row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 20px; padding: 24px 40px; align-items: stretch; height: 290px; }
+  .s { background: #fff; border: 1px solid var(--hair); border-radius: 20px; padding: 26px 26px 22px; }
+  .v { font-family: var(--sans); font-weight: 700; font-size: 64px; letter-spacing: -.035em; line-height: 1; }
+  .v small { font-size: 26px; color: var(--muted); font-weight: 600; letter-spacing: 0; margin-left: 4px; }
+  .l { font-size: 19px; color: var(--ink-2); margin-top: 10px; line-height: 1.3; }
+  .u { display: inline-block; margin-top: 12px; font-size: 13px; font-weight: 700; letter-spacing: .12em; color: var(--teal); }
+</style></head>
+<body><div class="row">
+  <div class="s"><div class="v">2.7<small>ms</small></div><div class="l">face tracking per frame, vs 25.3 ms on the CPU</div><span class="u">NPU · 9× FASTER</span></div>
+  <div class="s"><div class="v">79<small>ms</small></div><div class="l">to transcribe a 5.6 s spoken command with Whisper</div><span class="u">NPU</span></div>
+  <div class="s"><div class="v">31<small>tok/s</small></div><div class="l">Qwen3-4B turning speech + screen into actions</div><span class="u">NPU</span></div>
+  <div class="s"><div class="v">25<small>tok/s</small></div><div class="l">Qwen3-VL-4B describing the screen or the room</div><span class="u">NPU</span></div>
+  <div class="s"><div class="v">0</div><div class="l">network calls after install; nothing leaves the laptop</div><span class="u">OFFLINE</span></div>
+</div></body></html>

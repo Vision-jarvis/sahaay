@@ -43,7 +43,7 @@ def render(html: Path, png: Path) -> None:
 
 
 def slides() -> list[Path]:
-    return sorted(p for p in SRC.glob("*.html") if re.match(r"\d\d-", p.name))
+    return sorted(p for p in SRC.glob("*.html") if re.match(r"\d\d[a-z]?-", p.name))
 
 
 def notes_for(html: Path) -> str:
@@ -93,7 +93,7 @@ def main() -> int:
     all_slides = slides()
     pairs = []
     for html in all_slides:
-        num = html.name[:2]
+        num = html.name.split("-", 1)[0]
         png = OUT / f"{num}.png"
         if not only or num in only:
             render(html, png)

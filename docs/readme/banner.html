@@ -1,0 +1,29 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><link rel="stylesheet" href="../deck/src/deck.css">
+<style>
+  html, body { width: 1600px; height: 560px; }
+  body { background: var(--paper); }
+  .wrap { position: relative; width: 1600px; height: 560px; padding: 70px 80px; overflow: hidden; }
+  .hero { position: absolute; right: -40px; top: -60px; width: 900px; height: 680px; object-fit: cover; object-position: right center; }
+  .wash { position: absolute; inset: 0; background: linear-gradient(90deg, var(--paper) 0%, var(--paper) 44%, rgba(247,244,238,0) 72%); }
+  .t { position: relative; }
+  .name { font-family: var(--serif); font-variation-settings: "opsz" 144, "SOFT" 80, "WONK" 1; font-weight: 500; font-size: 132px; line-height: .95; letter-spacing: -.03em; }
+  .deva { font-family: var(--deva); font-size: 30px; color: var(--muted); margin-top: 8px; }
+  .tag { font-family: var(--serif); font-size: 40px; line-height: 1.12; margin-top: 34px; max-width: 780px; }
+  .tag em { font-style: italic; color: var(--saffron); }
+  .chips { display: flex; gap: 12px; margin-top: 30px; }
+  .chip { font-size: 18px; font-weight: 650; padding: 8px 16px; border-radius: 999px; background: #fff; border: 1px solid var(--hair); color: var(--ink-2); }
+  .chip.g { background: var(--teal-soft); color: var(--teal); border-color: rgba(14,124,107,.3); }
+  .logo { position: absolute; right: 70px; top: 40px; height: 34px; }
+</style></head>
+<body><div class="wrap">
+  <img class="hero" src="../deck/src/img/hero.png">
+  <div class="wash"></div>
+  <div class="t">
+    <div class="name">Sahaay</div>
+    <div class="deva">सहाय · assistance</div>
+    <div class="tag">Hands-free and eyes-free Windows, <em>entirely on the Snapdragon Hexagon NPU.</em></div>
+    <div class="chips"><span class="chip g">6 models on the NPU</span><span class="chip">fully offline</span><span class="chip">English + हिन्दी</span><span class="chip">HP OmniBook ready</span></div>
+  </div>
+  <img class="logo" src="../deck/src/img/snapdragon_logo.svg">
+</div></body></html>
