@@ -32,3 +32,7 @@ Thumbs.db
 docs/deck/out/
 *.new.pptx
 ~$*
+
+# raw demo recordings (may contain unrelated windows); only cropped assets are published
+docs/media/handsfree*
+docs/media/narrator*

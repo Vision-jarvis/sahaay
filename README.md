@@ -34,10 +34,19 @@ Built by **Ruhan Srivastava** (IIT Kharagpur) for the **Snapdragon AI Lab Build 
 
 ## 🎬 See it
 
-<!-- DEMO:START (replaced with recorded GIFs by tools/record_demo.py output) -->
-<img src="docs/media/readme_storyboard.png" alt="One spoken command, end to end" width="100%">
+<!-- DEMO:START -->
+<table>
+<tr>
+<td width="50%"><img src="docs/media/demo_handsfree.gif" alt="Head cursor with the NPU face mesh" width="100%"></td>
+<td width="50%"><img src="docs/media/demo_narrator.gif" alt="Describing the screen with Qwen3-VL on the NPU" width="100%"></td>
+</tr>
+<tr>
+<td align="center"><b>Hands-free:</b> head pose from the 468-point NPU face mesh (bottom right) moves the cursor</td>
+<td align="center"><b>Narrator:</b> "describe what's on the screen" answered by Qwen3-VL-4B on the NPU</td>
+</tr>
+</table>
 
-<p align="center"><i>One spoken command, end to end: heard by Whisper, planned by Qwen3-4B against the live UI Automation tree, validated, executed, confirmed by voice.</i></p>
+<img src="docs/media/readme_storyboard.png" alt="One spoken command, end to end" width="100%">
 <!-- DEMO:END -->
 
 | 🖐️ Hands-free mode | 👁️ Narrator mode |
