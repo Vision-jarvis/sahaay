@@ -1,17 +1,19 @@
 <!doctype html>
 <html><head><meta charset="utf-8"><link rel="stylesheet" href="deck.css">
 <style>
-  .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; margin-top: 48px; }
-  .card { min-height: 560px; display: flex; flex-direction: column; }
-  .card .big { font-family: var(--sans); font-weight: 700; font-size: 84px; letter-spacing: -.035em; line-height: 1; margin: 18px 0 8px; }
-  .card .big .unit { font-size: 30px; color: var(--muted); font-weight: 600; margin-left: 6px; letter-spacing: 0; }
-  .card h3 { margin-top: 6px; }
-  .card p { margin-top: 10px; }
-  .card .src { margin-top: auto; padding-top: 20px; font-family: var(--mono); font-size: 16px; color: var(--muted); letter-spacing: .04em; line-height: 1.5; }
+  .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 36px; margin-top: 52px; }
+  .card { min-height: 600px; display: flex; flex-direction: column; padding: 36px 40px; }
+  .card .tag { display: inline-block; font-size: 18px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--saffron); }
+  .card .big { font-family: var(--sans); font-weight: 700; font-size: 92px; letter-spacing: -.035em; line-height: 1; margin: 22px 0 10px; }
+  .card .big .unit { font-size: 32px; color: var(--muted); font-weight: 600; margin-left: 6px; letter-spacing: 0; }
+  .card h3 { font-family: var(--serif); font-variation-settings: "opsz" 72, "SOFT" 60; font-weight: 500; font-size: 36px; line-height: 1.1; margin-top: 6px; }
+  .card p { margin-top: 14px; font-size: 24px; }
+  .card p b { color: var(--ink); font-weight: 650; }
+  .card .src { margin-top: auto; padding-top: 22px; font-size: 17px; color: var(--muted); line-height: 1.45; }
 </style></head>
 <body><div class="slide">
-  <div class="kicker">02 · The problem</div>
-  <h2>Assistive technology today is expensive, depends on the cloud, and stops at the basics.</h2>
+  <div class="kicker">The problem</div>
+  <h2>Assistive technology today is expensive, depends on the cloud, and <em>stops at the basics.</em></h2>
   <div class="cards">
     <div class="card">
       <span class="tag">Cost</span>
@@ -35,7 +37,7 @@
       <div class="src">Windows Narrator and Voice Access feature scope, Microsoft docs, 2026</div>
     </div>
   </div>
-  <div class="foot"><span>Sahaay</span><span class="n">03 / 12</span></div>
+  <div class="foot"><span><span class="dot"></span>Sahaay</span><span>03</span></div>
 </div>
 <!-- notes: Three concrete gaps: price, privacy of a face camera plus screen, and coverage of what built-in tools can do. -->
 </body></html>

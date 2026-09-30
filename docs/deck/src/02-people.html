@@ -1,63 +1,51 @@
 <!doctype html>
 <html><head><meta charset="utf-8"><link rel="stylesheet" href="deck.css">
 <style>
-  .people { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-top: 48px; }
-  .person { background: var(--panel); border: 1px solid var(--hair); border-radius: 18px; padding: 36px 40px; display: grid; grid-template-columns: 1fr 240px; gap: 28px; min-height: 470px; }
-  .person h3 { font-family: var(--display); font-weight: 600; font-size: 40px; letter-spacing: -.015em; line-height: 1.1; margin-top: 16px; }
-  .person p { font-size: 24px; color: var(--ink-2); line-height: 1.42; margin-top: 18px; }
-  .person p b { color: var(--ink); font-weight: 650; }
-  .person .today { margin-top: 26px; font-family: var(--mono); font-size: 18px; color: var(--muted); line-height: 1.5; border-left: 3px solid var(--red); padding-left: 16px; }
-  .person .today b { color: var(--ink); font-weight: 600; }
-  .glyph { align-self: start; justify-self: end; width: 240px; height: 240px; }
-  .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; margin-top: 40px; }
-  .stat .value { font-size: 72px; }
-  .stat .value .unit { font-size: 28px; }
-  .stat .label { font-size: 21px; margin-top: 8px; max-width: 480px; }
-  .stat .src { margin-top: 8px; }
+  .people { display: grid; grid-template-columns: 1fr 1fr; gap: 72px; margin-top: 44px; }
+  .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 40px; margin-top: 44px; }
+  .stats .v { font-family: var(--sans); font-weight: 700; font-size: 60px; letter-spacing: -.03em; line-height: 1; }
+  .stats .v .u { font-size: 24px; color: var(--muted); font-weight: 600; margin-left: 6px; letter-spacing: 0; }
+  .stats .l { font-size: 21px; color: var(--ink-2); margin-top: 8px; }
+  .stats .s { font-size: 17px; color: var(--muted); margin-top: 4px; }
+  .person { display: grid; grid-template-columns: 380px 1fr; gap: 40px; align-items: center; }
+  .portrait { width: 380px; height: 380px; border-radius: 28px; object-fit: cover; background: var(--paper-2); border: 1px solid var(--hair); }
+  .person h3 { font-family: var(--serif); font-variation-settings: "opsz" 72, "SOFT" 60; font-weight: 500; font-size: 52px; letter-spacing: -.01em; line-height: 1.05; }
+  .person .who { font-size: 24px; color: var(--muted); margin-top: 8px; }
+  .person .quote { font-size: 30px; line-height: 1.4; margin-top: 26px; color: var(--ink-2); }
+  .person .quote b { color: var(--ink); font-weight: 650; }
+  .person .mark { width: 56px; height: 8px; border-radius: 4px; margin-top: 26px; }
+  .note { position: absolute; left: 112px; bottom: 84px; font-size: 20px; color: var(--muted); }
 </style></head>
 <body><div class="slide">
-  <div class="kicker">01 · Who this is for</div>
+  <div class="kicker">Two people</div>
   <h2>Two groups of people who cannot use a laptop the way it ships.</h2>
   <div class="people">
     <div class="person">
+      <img class="portrait" src="img/persona_arjun.png" onerror="this.style.visibility='hidden'">
       <div>
-        <span class="tag red">Motor impairment</span>
-        <h3>Cannot use a mouse or a keyboard</h3>
-        <p>Cerebral palsy, spinal injury, ALS, severe RSI, a broken arm. <b>The screen works; the hands do not.</b></p>
-        <div class="today"><b>Today:</b> every assignment, every portal, every chat needs someone else's hands, or a ₹1.5 lakh eye-gaze system.</div>
+        <h3>Arjun, 22</h3>
+        <div class="who">Engineering student · cerebral palsy</div>
+        <div class="quote">Cannot hold a trackpad steady. Every assignment, portal and chat needs <b>someone else's hands.</b></div>
+        <div class="mark" style="background: var(--saffron)"></div>
       </div>
-      <svg class="glyph" viewBox="0 0 240 240" fill="none" stroke="#F2F2EF" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-        <ellipse cx="96" cy="86" rx="46" ry="54" stroke="#E3261D" stroke-width="3"/>
-        <path d="M62 78 Q96 62 130 78" stroke-opacity=".6"/><path d="M70 104 Q96 118 122 104" stroke-opacity=".6"/>
-        <circle cx="80" cy="84" r="4" fill="#F2F2EF" stroke="none"/><circle cx="112" cy="84" r="4" fill="#F2F2EF" stroke="none"/>
-        <path d="M150 90 L212 128" stroke="#E3261D" stroke-width="3"/><path d="M198 118 L212 128 L200 140" stroke="#E3261D" stroke-width="3"/>
-        <path d="M120 176 L175 176 L200 226" /><path d="M146 176 L146 210"/><circle cx="146" cy="222" r="10"/><circle cx="196" cy="230" r="6"/>
-        <text x="92" y="22" font-family="JetBrains Mono" font-size="15" fill="#8E8E95">head → cursor</text>
-      </svg>
     </div>
     <div class="person">
+      <img class="portrait" src="img/persona_meena.png" onerror="this.style.visibility='hidden'">
       <div>
-        <span class="tag red">Low vision and blindness</span>
-        <h3>Cannot see the screen</h3>
-        <p>Diabetic retinopathy, glaucoma, congenital blindness. <b>A screen reader lists forty buttons; it cannot describe a photo, a chart, a scanned form, or the room.</b></p>
-        <div class="today"><b>Today:</b> anything that is an image, a canvas or the physical world needs someone else's eyes.</div>
+        <h3>Meena, 58</h3>
+        <div class="who">Shopkeeper · low vision, diabetic retinopathy</div>
+        <div class="quote">Can hear a screen reader list forty buttons. <b>Cannot see the photo her daughter sent</b>, or the chart in her bank app.</div>
+        <div class="mark" style="background: var(--teal)"></div>
       </div>
-      <svg class="glyph" viewBox="0 0 240 240" fill="none" stroke="#F2F2EF" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-        <rect x="28" y="40" width="184" height="118" rx="8" stroke="#E3261D" stroke-width="3"/>
-        <rect x="44" y="58" width="70" height="46" rx="4" stroke-opacity=".6"/><path d="M52 96 L70 76 L84 90 L96 80 L108 96" stroke-opacity=".6"/>
-        <line x1="128" y1="62" x2="196" y2="62"/><line x1="128" y1="80" x2="184" y2="80"/><line x1="128" y1="98" x2="190" y2="98"/>
-        <line x1="44" y1="124" x2="196" y2="124" stroke-opacity=".5"/><line x1="44" y1="140" x2="150" y2="140" stroke-opacity=".5"/>
-        <path d="M60 196 Q120 150 180 196" stroke="#E3261D" stroke-width="3"/><circle cx="120" cy="184" r="12" stroke="#E3261D" stroke-width="3"/>
-        <text x="20" y="232" font-family="JetBrains Mono" font-size="15" fill="#8E8E95">screen → speech</text>
-      </svg>
     </div>
   </div>
   <div class="stats">
-    <div class="stat"><div class="value">2.68<span class="unit">crore</span></div><div class="label">Indians living with a disability</div><div class="src">Census of India 2011</div></div>
-    <div class="stat"><div class="value">1 in 5</div><div class="label">of them with a movement disability</div><div class="src">Census of India 2011</div></div>
-    <div class="stat"><div class="value">1 in 5</div><div class="label">of them with a visual disability</div><div class="src">Census of India 2011</div></div>
+    <div><div class="v">2.68<span class="u">crore</span></div><div class="l">Indians living with a disability</div><div class="s">Census of India 2011</div></div>
+    <div><div class="v">1 in 5</div><div class="l">of them with a movement disability</div><div class="s">Census of India 2011</div></div>
+    <div><div class="v">1 in 5</div><div class="l">of them with a visual disability</div><div class="s">Census of India 2011</div></div>
   </div>
-  <div class="foot"><span>Sahaay</span><span class="n">02 / 12</span></div>
+  <div class="note">Composite personas drawn from published accessibility research; illustrations, not real people.</div>
+  <div class="foot"><span><span class="dot"></span>Sahaay</span><span>02</span></div>
 </div>
-<!-- notes: Two user groups. For motor impairment the mouse and keyboard are the barrier. For low vision the screen reader stops at controls; images, charts, scans and the physical world are out of reach. Sahaay serves both with one on-device brain. -->
+<!-- notes: Two composite users. Arjun has a movement disability; the mouse and keyboard are the barrier. Meena has low vision; the screen reader reads controls but cannot describe a photo, a chart or the room. Sahaay serves both with one on-device brain. -->
 </body></html>

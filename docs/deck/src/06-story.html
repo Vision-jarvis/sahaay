@@ -1,75 +1,75 @@
 <!doctype html>
 <html><head><meta charset="utf-8"><link rel="stylesheet" href="deck.css">
 <style>
-  .strip { display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; margin-top: 44px; }
+  .strip { display: grid; grid-template-columns: repeat(3, 1fr); gap: 36px; margin-top: 56px; }
   .panel { position: relative; }
-  .panel .n { position: absolute; top: -16px; left: -12px; width: 46px; height: 46px; border-radius: 50%; background: var(--red); color: #fff; font-family: var(--mono); font-weight: 700; font-size: 20px; display: flex; align-items: center; justify-content: center; z-index: 2; }
-  .screen { width: 100%; height: 470px; border-radius: 16px; background: #1E1E22; border: 1px solid var(--hair-2); position: relative; overflow: hidden; }
-  .win { position: absolute; left: 28px; right: 28px; top: 28px; bottom: 28px; background: #fff; border-radius: 10px; color: #1B1F24; }
-  .tbar { height: 38px; border-bottom: 1px solid #E6EAEE; display: flex; align-items: center; padding: 0 14px; gap: 8px; font-size: 15px; color: #7A8590; font-family: var(--sans); }
-  .tbar i { width: 11px; height: 11px; border-radius: 50%; background: #D6DCE2; display: inline-block; }
-  .body { padding: 18px 22px; font-family: var(--sans); font-size: 17px; line-height: 1.5; color: #3C444C; }
-  .hud { position: absolute; right: 20px; bottom: 20px; width: 290px; background: rgba(10,10,11,.96); color: var(--ink); border-radius: 12px; padding: 12px 14px; font-size: 15px; line-height: 1.4; border: 1px solid var(--hair-2); }
-  .hud.wide { left: 20px; right: 20px; width: auto; }
-  .hud .h { display: flex; justify-content: space-between; font-weight: 700; color: var(--red); }
-  .hud .h span:last-child { color: var(--ink-2); font-family: var(--mono); font-weight: 600; letter-spacing: .08em; font-size: 12px; }
-  .hud .m { color: var(--muted); margin-top: 4px; }
-  .hud .l { font-family: var(--mono); color: var(--muted); font-size: 13px; margin-top: 6px; white-space: pre; line-height: 1.5; }
-  .hud .l b { color: var(--red); font-weight: 600; }
-  .cursor { position: absolute; width: 40px; height: 40px; border-radius: 50%; border: 3px solid var(--red); }
-  .cursor::after { content: ""; position: absolute; left: 50%; top: 50%; width: 8px; height: 8px; margin: -4px 0 0 -4px; border-radius: 50%; background: var(--red); }
-  .ring { position: absolute; width: 40px; height: 40px; border-radius: 50%; background: conic-gradient(var(--red) 0 270deg, transparent 270deg 360deg); -webkit-mask: radial-gradient(circle, transparent 14px, #000 15px); }
-  .cap { margin-top: 22px; }
-  .cap .who { font-family: var(--mono); font-size: 16px; letter-spacing: .12em; text-transform: uppercase; color: var(--red); margin-bottom: 8px; font-weight: 600; }
-  .cap .t { font-size: 25px; line-height: 1.32; color: var(--ink); }
-  .btn { display: inline-block; padding: 7px 16px; border-radius: 7px; background: #F1F4F7; border: 1px solid #DCE2E8; font-size: 16px; color: #3C444C; margin: 5px 5px 0 0; }
-  .btn.hot { background: #FDECEA; border-color: var(--red); color: var(--red); font-weight: 600; }
-  .waves { display: flex; gap: 5px; align-items: flex-end; height: 30px; margin-top: 8px; }
-  .waves i { display: block; width: 6px; background: var(--red); border-radius: 3px; }
-  .json { font-family: var(--mono); font-size: 14px; color: #B3261E; }
+  .panel .n { position: absolute; top: -18px; left: -14px; width: 52px; height: 52px; border-radius: 50%; background: var(--ink); color: var(--paper); font-weight: 700; font-size: 24px; display: flex; align-items: center; justify-content: center; z-index: 2; }
+  .screen { width: 100%; height: 470px; border-radius: 22px; background: #E9EEF3; border: 1px solid var(--hair); position: relative; overflow: hidden; }
+  .win { position: absolute; left: 34px; right: 34px; top: 34px; bottom: 34px; background: #fff; border-radius: 12px; box-shadow: 0 10px 30px rgba(20,24,28,.08); border: 1px solid #DCE2E8; }
+  .tbar { height: 40px; border-bottom: 1px solid #E6EAEE; display: flex; align-items: center; padding: 0 16px; gap: 8px; font-size: 16px; color: #7A8590; }
+  .tbar i { width: 12px; height: 12px; border-radius: 50%; background: #D6DCE2; display: inline-block; }
+  .body { padding: 22px 26px; font-family: var(--mono); font-size: 22px; color: var(--ink); line-height: 1.5; }
+  .caret { display: inline-block; width: 3px; height: 26px; background: var(--ink); vertical-align: -4px; margin-left: 2px; }
+  .hud { position: absolute; right: 22px; bottom: 22px; width: 300px; background: rgba(16,20,24,.94); color: #E8EDF2; border-radius: 14px; padding: 14px 16px; font-size: 16px; line-height: 1.4; box-shadow: 0 8px 24px rgba(0,0,0,.25); }
+  .hud .h { display: flex; justify-content: space-between; font-weight: 700; color: var(--npu); }
+  .hud .h span:last-child { color: #E8EDF2; font-weight: 600; letter-spacing: .08em; font-size: 13px; }
+  .hud .m { color: #8A97A6; margin-top: 4px; }
+  .hud .l { font-family: var(--mono); color: #8A97A6; font-size: 13px; margin-top: 8px; white-space: pre; line-height: 1.5; }
+  .hud.wide { left: 22px; right: 22px; width: auto; }
+  .hud.wide .l { margin-top: 6px; font-size: 14px; }
+  .hud .l b { color: var(--npu); font-weight: 600; }
+  .cursor { position: absolute; width: 44px; height: 44px; border-radius: 50%; border: 3px solid var(--npu); box-sizing: border-box; }
+  .cursor::after { content: ""; position: absolute; left: 50%; top: 50%; width: 8px; height: 8px; margin: -4px 0 0 -4px; border-radius: 50%; background: var(--npu); }
+  .ring { position: absolute; width: 44px; height: 44px; border-radius: 50%; background: conic-gradient(var(--npu) 0 270deg, transparent 270deg 360deg); -webkit-mask: radial-gradient(circle, transparent 15px, #000 16px); }
+  .bubble { margin-top: 26px; font-family: var(--serif); font-style: italic; font-variation-settings: "opsz" 48, "SOFT" 100, "WONK" 1; font-size: 32px; line-height: 1.25; color: var(--ink); }
+  .bubble .who { display: block; font-family: var(--sans); font-style: normal; font-size: 19px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; font-weight: 600; }
+  .btn { display: inline-block; padding: 8px 18px; border-radius: 8px; background: #F1F4F7; border: 1px solid #DCE2E8; font-family: var(--sans); font-size: 18px; color: #3C444C; margin: 6px 6px 0 0; }
+  .btn.hot { background: #FFF2EA; border-color: var(--saffron); color: var(--saffron); font-weight: 600; }
+  .waves { display: flex; gap: 5px; align-items: flex-end; height: 34px; margin-top: 10px; }
+  .waves i { display: block; width: 6px; background: var(--saffron); border-radius: 3px; }
 </style></head>
 <body><div class="slide">
-  <div class="kicker">05 · One command, end to end</div>
-  <h2>How a spoken request becomes a validated action and a spoken confirmation.</h2>
+  <div class="kicker">One command, end to end</div>
+  <h2>How a spoken request becomes a <em>validated action</em> and a spoken confirmation.</h2>
   <div class="strip">
     <div class="panel"><div class="n">1</div>
       <div class="screen">
         <div class="win"><div class="tbar"><i></i><i></i><i></i> Downloads</div>
-          <div class="body">
+          <div class="body" style="font-family: var(--sans); color:#3C444C">
             <span class="btn">Documents</span><span class="btn">Pictures</span><span class="btn hot">Downloads</span><br>
             <span class="btn">Sort by date</span><span class="btn">New folder</span>
           </div></div>
         <div class="hud"><div class="h"><span>Sahaay</span><span>HEARING</span></div><div class="m">Heard: open my downloads and sort by date</div>
-          <div class="waves"><i style="height:9px"></i><i style="height:24px"></i><i style="height:16px"></i><i style="height:30px"></i><i style="height:12px"></i><i style="height:22px"></i><i style="height:8px"></i></div></div>
-        <div class="cursor" style="left: 150px; top: 240px"></div>
+          <div class="waves"><i style="height:10px"></i><i style="height:26px"></i><i style="height:18px"></i><i style="height:32px"></i><i style="height:14px"></i><i style="height:24px"></i><i style="height:8px"></i></div></div>
+        <div class="cursor" style="left: 150px; top: 250px"></div>
       </div>
-      <div class="cap"><div class="who">The user says</div><div class="t">"Open my downloads and sort by date."</div></div>
+      <div class="bubble"><span class="who">Arjun says</span>"Open my downloads and sort by date."</div>
     </div>
     <div class="panel"><div class="n">2</div>
       <div class="screen">
         <div class="win"><div class="tbar"><i></i><i></i><i></i> Downloads</div>
-          <div class="body" style="font-size: 15px; line-height: 1.45; padding-top: 14px">
+          <div class="body" style="font-family: var(--sans); font-size: 16px; color:#3C444C; line-height: 1.45; padding-top: 14px">
             Screen: "Downloads" (explorer)<br>[1] Button "Sort by date" · [2] Button "New folder"<br>[3] "Assignment_3.pdf" · [4] "photo.jpg"<br><br>
-            <span class="json">→ [{"tool":"open_app","args":{"name":"downloads"}},<br>&nbsp;&nbsp;&nbsp;{"tool":"click","args":{"target":"Sort by date"}}]</span>
+            <span class="mono" style="font-size:14px; color:#0E7C6B">→ [{"tool":"open_app","args":{"name":"downloads"}},<br>&nbsp;&nbsp;&nbsp;{"tool":"click","args":{"target":"Sort by date"}}]</span>
           </div></div>
         <div class="hud wide"><div class="h"><span>Sahaay</span><span>THINKING</span></div>
           <div class="l">whisper <b>79 ms</b>   llm <b>1.4 s</b>   face <b>2.7 ms</b>   all on the NPU</div></div>
       </div>
-      <div class="cap"><div class="who">On the NPU</div><div class="t">Whisper transcribes. UI Automation lists the controls. Qwen3-4B returns two tool calls; the validator checks both against the allow-list.</div></div>
+      <div class="bubble"><span class="who">On the NPU</span>Speech becomes text, the screen becomes a list, the list plus the request becomes two safe tool calls.</div>
     </div>
     <div class="panel"><div class="n">3</div>
       <div class="screen">
         <div class="win"><div class="tbar"><i></i><i></i><i></i> Downloads · sorted by date</div>
-          <div class="body" style="font-size: 18px; line-height: 1.7">
+          <div class="body" style="font-family: var(--sans); font-size: 20px; color:#3C444C; line-height: 1.7">
             <span style="color:#7A8590">Today</span><br>Assignment_3.pdf<br>photo.jpg<br><span style="color:#7A8590">Yesterday</span><br>lecture_notes.pdf
           </div></div>
         <div class="hud"><div class="h"><span>Sahaay</span><span>SPEAKING</span></div><div class="m">Did: opened Downloads; clicked Sort by date</div></div>
         <div class="ring" style="left: 300px; top: 150px"></div>
       </div>
-      <div class="cap"><div class="who">Sahaay says</div><div class="t">"Downloads is open, sorted by date. Newest first is Assignment 3."</div></div>
+      <div class="bubble"><span class="who">Sahaay says</span>"Downloads is open, sorted by date. Newest first is Assignment 3."</div>
     </div>
   </div>
-  <div class="foot"><span>Sahaay · frames drawn from the live app; recordings in the README</span><span class="n">06 / 12</span></div>
+  <div class="foot"><span><span class="dot"></span>Sahaay</span><span>06 · frames drawn from the live app; recordings in the repository README</span></div>
 </div>
-<!-- notes: One command traced through the system. Speech is transcribed on the NPU, the screen is turned into a numbered control list by UI Automation, the language model returns validated tool calls, the executor runs them, the result is spoken back. The ring is the dwell-click indicator. -->
+<!-- notes: A storyboard of one command. Speech is transcribed on the NPU, the screen is turned into a numbered list of controls by UI Automation, the language model returns validated tool calls, the executor runs them, and the result is spoken back. The dwell ring is the head-cursor click indicator. -->
 </body></html>

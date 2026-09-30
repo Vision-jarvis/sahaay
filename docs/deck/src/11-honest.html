@@ -1,17 +1,18 @@
 <!doctype html>
 <html><head><meta charset="utf-8"><link rel="stylesheet" href="deck.css">
 <style>
+  body { background: var(--night); }
   .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px 24px; margin-top: 32px; }
-  .item { background: var(--panel); border: 1px solid var(--hair); border-radius: 14px; padding: 18px 24px; display: grid; grid-template-columns: 44px 1fr; gap: 16px; }
-  .item .no { font-family: var(--mono); font-size: 18px; color: var(--red); font-weight: 600; padding-top: 4px; }
-  .item h3 { font-family: var(--display); font-weight: 600; font-size: 24px; letter-spacing: -.01em; line-height: 1.15; }
-  .item p { font-size: 18px; color: var(--ink-2); line-height: 1.38; margin-top: 6px; }
-  .item p b { color: var(--ink); font-weight: 650; }
-  .item p code { font-family: var(--mono); font-size: 17px; color: var(--ink); background: var(--panel-2); padding: 1px 6px; border-radius: 4px; }
+  .item { background: var(--night-2); border: 1px solid var(--night-hair); border-radius: 18px; padding: 18px 24px; display: grid; grid-template-columns: 44px 1fr; gap: 16px; }
+  .item .no { font-family: var(--mono); font-size: 18px; color: var(--npu); font-weight: 600; padding-top: 4px; }
+  .item h3 { font-family: var(--sans); font-weight: 650; font-size: 24px; letter-spacing: -.01em; line-height: 1.15; color: #fff; }
+  .item p { font-size: 18px; color: var(--night-muted); line-height: 1.38; margin-top: 6px; }
+  .item p b { color: var(--night-ink); font-weight: 650; }
+  .item p code { font-family: var(--mono); font-size: 16px; color: var(--night-ink); background: rgba(255,255,255,.06); padding: 1px 6px; border-radius: 4px; }
 </style></head>
-<body><div class="slide">
-  <div class="kicker">10 · Engineering challenges</div>
-  <h2>Seven problems between the models and a working product, and their fixes.</h2>
+<body class="night"><div class="slide">
+  <div class="kicker">Engineering challenges</div>
+  <h2>Seven problems between the models and a working product, <em>and their fixes.</em></h2>
   <div class="grid">
     <div class="item"><div class="no">01</div><div><h3>ONNX Runtime silently ran on the CPU while claiming the NPU</h3><p>With the current plugin packaging, <code>providers=["QNNExecutionProvider"]</code> is accepted and ignored. <b>Fix:</b> register the QNN plugin, pick the NPU device through the device API, assert the active provider on every session, and ship <code>npu_check.py</code> so a reviewer can see it.</p></div></div>
     <div class="item"><div class="no">02</div><div><h3>No OpenCV for Windows on ARM64</h3><p>The camera and every image operation had to work without it. <b>Fix:</b> DirectShow through COM for capture (with <code>CoInitialize</code> on every worker thread), Pillow and numpy for the MediaPipe letterbox, affine crop and landmark mapping.</p></div></div>
@@ -21,7 +22,7 @@
     <div class="item"><div class="no">06</div><div><h3>A mis-heard fragment launched Windows Search</h3><p>"Open it." from clipped audio became a search for "it". <b>Fix:</b> pronoun and length guards in the grammar, an allow-list of tools and elements, and no search fallback for short tokens.</p></div></div>
     <div class="item" style="grid-column: 1 / -1; grid-template-columns: 44px 1fr"><div class="no">07</div><div><h3>QNN context caching and chipset generations</h3><p>A cached compiled graph must be reused, not regenerated, and the development laptop's Hexagon v81 binaries do not run on the OmniBook's v73. <b>Fix:</b> reuse the cache when present, invalidate on mismatch, and ship separate model packs per chipset, both profiled on Qualcomm AI Hub.</p></div></div>
   </div>
-  <div class="foot"><span>Sahaay</span><span class="n">11 / 12</span></div>
+  <div class="foot"><span><span class="dot"></span>Sahaay</span><span>11</span></div>
 </div>
 <!-- notes: The engineering that made the difference, each with its fix. Items 01 and 07 are the ones most likely to trip other teams claiming NPU numbers. -->
 </body></html>
